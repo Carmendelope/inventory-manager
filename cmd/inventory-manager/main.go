@@ -5,8 +5,8 @@
 package main
 
 import (
-	"github.com/nalej/golang-template/cmd/example-app/commands"
-	"github.com/nalej/golang-template/version"
+	"github.com/nalej/inventory-manager/cmd/inventory-manager/commands"
+	"github.com/nalej/inventory-manager/version"
 )
 
 var MainVersion string
