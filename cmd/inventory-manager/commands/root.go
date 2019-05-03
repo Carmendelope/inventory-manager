@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Nalej - All Rights Reserved
+ * Copyright (C) 2019 Nalej - All Rights Reserved
  */
 
 package commands
@@ -18,15 +18,15 @@ var debugLevel bool
 var consoleLogging bool
 
 var rootCmd = &cobra.Command{
-	Use:   "",
+	Use:   "inventory-manager",
 	Short: "Inventory Manager component",
 	Long:  `Inventory Manager component`,
 	Version: "unknown-version",
 
-	//Run: func(cmd *cobra.Command, args []string) {
-	//	SetupLogging()
-	//	log.Info().Msg("This is a root message")
-	//},
+	Run: func(cmd *cobra.Command, args []string) {
+		SetupLogging()
+		cmd.Help()
+	},
 }
 
 func init() {
