@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: inventory-manager
+  namespace: __NPH_NAMESPACE
+  labels:
+    cluster: management
+    component: inventory-manager
+spec:
+  selector:
+    cluster: management
+    component: inventory-manager
+  type: ClusterIP
+  ports:
+  - protocol: TCP
+    port: 5510
+    targetPort: 5510

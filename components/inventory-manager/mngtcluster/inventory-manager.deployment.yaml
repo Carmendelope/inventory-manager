@@ -1,0 +1,38 @@
+###
+# Inventory Manager
+###
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    cluster: management
+    component: inventory-manager
+  name: inventory-manager
+  namespace: __NPH_NAMESPACE
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      cluster: management
+      component: inventory-manager
+  template:
+    metadata:
+      labels:
+        cluster: management
+        component: inventory-manager
+    spec:
+      containers:
+      - name: inventory-manager
+        image: __NPH_REGISTRY.azurecr.io/__NPH_REGISTRY_NAMESPACE/inventory-manager:__NPH_VERSION
+        imagePullPolicy: Always
+        args:
+        - "run"
+        - "--debug"
+        - "--authxAddress=authx.__NPH_NAMESPACE:8810"
+        - "--vpnManagerAddress=vpn-server.__NPH_NAMESPACE:5555"
+        securityContext:
+          runAsUser: 2000
+      imagePullSecrets:
+      - name: nalej-registry
