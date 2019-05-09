@@ -19,6 +19,10 @@ type Config struct {
 	VPNManagerAddress string
 	// AuthxAddress with the host:port to connect to the Authx manager.
 	AuthxAddress string
+	// ManagementClusterURL with the host where the management cluster resides
+	ManagementClusterURL string
+	//VPNServerURL with the URL of the VPN server accepting connections.
+	VPNServerURL string
 }
 
 
@@ -36,12 +40,19 @@ func (conf *Config) Validate() derrors.Error {
 		return derrors.NewInvalidArgumentError("authxAddress must be set")
 	}
 
+	if conf.ManagementClusterURL == "" {
+		return derrors.NewInvalidArgumentError("managementClusterURL must be set")
+	}
+
 	return nil
 }
 
 func (conf *Config) Print() {
 	log.Info().Str("app", version.AppVersion).Str("commit", version.Commit).Msg("Version")
 	log.Info().Int("port", conf.Port).Msg("gRPC port")
-	log.Info().Str("URL", conf.VPNManagerAddress).Msg("VPN Manager")
-	log.Info().Str("URL", conf.AuthxAddress).Msg("Authx")
+	log.Info().Str("URL", conf.VPNManagerAddress).Msg("VPN Manager component")
+	log.Info().Str("URL", conf.AuthxAddress).Msg("Authx component")
+	log.Info().Str("URL", conf.ManagementClusterURL).Msg("Management cluster")
+	log.Info().Str("URL", conf.VPNServerURL).Msg("VPN Server URL")
+
 }

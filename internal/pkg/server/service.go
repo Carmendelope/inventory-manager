@@ -32,7 +32,7 @@ func NewService(conf config.Config) *Service {
 }
 
 type Clients struct {
-	cpnClient grpc_vpn_server_go.VPNServerClient
+	vpnClient grpc_vpn_server_go.VPNServerClient
 	authxClient grpc_authx_go.InventoryClient
 }
 
@@ -59,7 +59,7 @@ func (s *Service) Run() error {
 	}
 	s.Configuration.Print()
 
-	_, cErr = s.GetClients()
+	clients, cErr := s.GetClients()
 	if cErr != nil {
 		log.Fatal().Str("err", cErr.DebugReport()).Msg("Cannot create clients")
 	}
@@ -74,7 +74,7 @@ func (s *Service) Run() error {
 	agentManager := agent.NewManager()
 	agentHandler := agent.NewHandler(agentManager)
 
-	ecManager := edgecontroller.NewManager()
+	ecManager := edgecontroller.NewManager(clients.authxClient, s.Configuration)
 	ecHandler := edgecontroller.NewHandler(ecManager)
 
 	invManager := inventory.NewManager()

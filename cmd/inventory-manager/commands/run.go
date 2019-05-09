@@ -29,8 +29,10 @@ var runCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(runCmd)
 	runCmd.Flags().IntVar(&cfg.Port, "port", 5510, "Port to receive management communications")
-	runCmd.PersistentFlags().StringVar(&cfg.VPNManagerAddress, "vpnManagerAddress", "localhost:5555", "VPN Server Manager address (host:port)")
+	runCmd.PersistentFlags().StringVar(&cfg.VPNManagerAddress, "vpnManagerAddress", "localhost:5666", "VPN Server Manager address (host:port)")
 	runCmd.PersistentFlags().StringVar(&cfg.AuthxAddress, "authxAddress", "localhost:8810",
 		"Authx address (host:port)")
+	runCmd.PersistentFlags().StringVar(&cfg.ManagementClusterURL, "managementClusterURL", "nalej.cluster.local",
+		"Management URL (base DNS)")
 
 }
