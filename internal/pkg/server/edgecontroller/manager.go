@@ -27,9 +27,12 @@ type Manager struct{
 	config config.Config
 }
 
-func NewManager(authxClient grpc_authx_go.InventoryClient, cfg config.Config) Manager{
+func NewManager(authxClient grpc_authx_go.InventoryClient, controllerClient grpc_inventory_go.ControllersClient,
+	vpnClient grpc_vpn_server_go.VPNServerClient, cfg config.Config) Manager{
 	return Manager{
 		authxClient:authxClient,
+		controllersClient:controllerClient,
+		vpnClient:vpnClient,
 		edgeControllerAPIURL: fmt.Sprintf("eic-api.%s", cfg.ManagementClusterURL),
 		config: cfg,
 	}
@@ -51,6 +54,9 @@ func (m * Manager) CreateEICToken(orgID *grpc_organization_go.OrganizationId) (*
 }
 
 func (m * Manager) EICJoin(request *grpc_inventory_manager_go.EICJoinRequest) (*grpc_inventory_manager_go.EICJoinResponse, error) {
+
+	log.Debug().Interface("request", request).Msg("EICJoin")
+
 	// Add the EIC to system model
 	ctx, cancel := contexts.InventoryContext()
 	defer cancel()
@@ -70,12 +76,15 @@ func (m * Manager) EICJoin(request *grpc_inventory_manager_go.EICJoinRequest) (*
 	vpnCtx, vpnCancel := contexts.VPNManagerContext()
 	defer vpnCancel()
 	eicUser := &grpc_vpn_server_go.AddVPNUserRequest{
-		Username:             eicUsername,
+		Username:            eicUsername,
+		OrganizationId:      request.OrganizationId,
 	}
+
 	vpnCredentials, err := m.vpnClient.AddVPNUser(vpnCtx, eicUser)
 	if err != nil{
 		return nil, err
 	}
+
 	credentials := &grpc_inventory_manager_go.VPNCredentials{
 		// TODO Is this needed?
 		Cacert:               "",

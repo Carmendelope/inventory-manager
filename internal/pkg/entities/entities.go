@@ -39,5 +39,5 @@ func ValidEICJoinRequest(request *grpc_inventory_manager_go.EICJoinRequest) derr
 }
 
 func GetEdgeControllerName(organizationID string, edgeControllerID string) string {
-	return fmt.Sprintf("%s-%s@eic", organizationID, edgeControllerID)
+	return fmt.Sprintf("%s-%s.eic", organizationID, edgeControllerID)
 }

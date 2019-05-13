@@ -42,7 +42,7 @@ func (h *Handler) EICJoin(_ context.Context, request *grpc_inventory_manager_go.
 	if verr != nil {
 		return nil, conversions.ToGRPCError(verr)
 	}
-	panic("implement me")
+	return h.manager.EICJoin(request)
 }
 
 func (h *Handler) EICStart(_ context.Context, info *grpc_inventory_manager_go.EICStartInfo) (*grpc_common_go.Success, error) {

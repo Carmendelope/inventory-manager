@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-authx-go"
+	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/inventory-manager/internal/pkg/config"
 	"github.com/nalej/inventory-manager/internal/pkg/server/agent"
 	"github.com/nalej/grpc-vpn-server-go"
@@ -34,6 +35,7 @@ func NewService(conf config.Config) *Service {
 type Clients struct {
 	vpnClient grpc_vpn_server_go.VPNServerClient
 	authxClient grpc_authx_go.InventoryClient
+	controllersClient grpc_inventory_go.ControllersClient
 }
 
 // GetClients creates the required connections with the remote clients.
@@ -46,9 +48,15 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with authx")
 	}
+	smConn, err := grpc.Dial(s.Configuration.SystemModelAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot create connection with system-model")
+	}
 	imClient := grpc_vpn_server_go.NewVPNServerClient(vpnConn)
 	aClient := grpc_authx_go.NewInventoryClient(aConn)
-	return &Clients{imClient, aClient}, nil
+	smClient := grpc_inventory_go.NewControllersClient(smConn)
+
+	return &Clients{imClient, aClient, smClient}, nil
 }
 
 // Run the service, launch the REST service handler.
@@ -74,7 +82,7 @@ func (s *Service) Run() error {
 	agentManager := agent.NewManager()
 	agentHandler := agent.NewHandler(agentManager)
 
-	ecManager := edgecontroller.NewManager(clients.authxClient, s.Configuration)
+	ecManager := edgecontroller.NewManager(clients.authxClient, clients.controllersClient, clients.vpnClient, s.Configuration)
 	ecHandler := edgecontroller.NewHandler(ecManager)
 
 	invManager := inventory.NewManager()

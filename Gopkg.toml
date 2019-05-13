@@ -12,15 +12,15 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-authx-go"
-    version="v0.0.46"
+    version="v0.0.48"
 
 [[constraint]]
     name="github.com/nalej/grpc-inventory-manager-go"
-    version="v0.0.1"
+    version="v0.0.9"
 
 [[constraint]]
     name="github.com/nalej/grpc-vpn-server-go"
-    version="v0.0.1"
+    version="v0.0.4"
 
 [[constraint]]
     name="github.com/onsi/ginkgo"
@@ -28,7 +28,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-utils"
-    version="v1.3.1"
+    version="v1.4.0"
 
 [[constraint]]
     name="github.com/onsi/gomega"

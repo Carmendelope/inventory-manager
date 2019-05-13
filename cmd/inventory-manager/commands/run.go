@@ -32,6 +32,8 @@ func init() {
 	runCmd.PersistentFlags().StringVar(&cfg.VPNManagerAddress, "vpnManagerAddress", "localhost:5666", "VPN Server Manager address (host:port)")
 	runCmd.PersistentFlags().StringVar(&cfg.AuthxAddress, "authxAddress", "localhost:8810",
 		"Authx address (host:port)")
+	runCmd.PersistentFlags().StringVar(&cfg.SystemModelAddress, "systemModelAddress", "localhost:8800",
+		"System Model address (host:port)")
 	runCmd.PersistentFlags().StringVar(&cfg.ManagementClusterURL, "managementClusterURL", "nalej.cluster.local",
 		"Management URL (base DNS)")
 
