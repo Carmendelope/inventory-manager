@@ -2,10 +2,9 @@
 #  Copyright 2018 Nalej
 # 
 
-# Name of the target applications to be built
-APPS=inventory-manager
+include scripts/Makefile.golang
 
-# Use global Makefile for common targets
-export
-%:
-	$(MAKE) -f Makefile.golang $@
+.DEFAULT_GOAL := all
+
+# Name of the target applications to be built
+APPS=inventory-manaager
