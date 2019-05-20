@@ -34,12 +34,18 @@ spec:
         - "--vpnManagerAddress=vpn-server.__NPH_NAMESPACE:5666"
         - "--managementClusterURL=$(MANAGEMENT_HOST)"
         - "--systemModelAddress=system-model.__NPH_NAMESPACE:8800"
+        - "--dnsAddress=$(DNS_HOST)"
         env:
         - name: MANAGEMENT_HOST
           valueFrom:
             configMapKeyRef:
               name: management-config
               key: public_host
+        - name: DNS_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: management-config
+                key: dns_host
         securityContext:
           runAsUser: 2000
       imagePullSecrets:

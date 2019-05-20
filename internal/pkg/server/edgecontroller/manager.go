@@ -24,6 +24,7 @@ type Manager struct{
 	vpnClient grpc_vpn_server_go.VPNServerClient
 	// EdgeControllerAPIURL with the URL of the EIC API to accept join request.
 	edgeControllerAPIURL string
+    dnsUrl string
 	config config.Config
 }
 
@@ -34,6 +35,7 @@ func NewManager(authxClient grpc_authx_go.InventoryClient, controllerClient grpc
 		controllersClient:controllerClient,
 		vpnClient:vpnClient,
 		edgeControllerAPIURL: fmt.Sprintf("eic-api.%s", cfg.ManagementClusterURL),
+		dnsUrl: cfg.DnsURL,
 		config: cfg,
 	}
 }
@@ -50,6 +52,7 @@ func (m * Manager) CreateEICToken(orgID *grpc_organization_go.OrganizationId) (*
 		Token:                token.Token,
 		Cacert:               token.Cacert,
 		JoinUrl:              m.edgeControllerAPIURL,
+		DnsUrl:               m.dnsUrl,
 	}, nil
 }
 
