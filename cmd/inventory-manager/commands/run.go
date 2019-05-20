@@ -36,5 +36,6 @@ func init() {
 		"System Model address (host:port)")
 	runCmd.PersistentFlags().StringVar(&cfg.ManagementClusterURL, "managementClusterURL", "nalej.cluster.local",
 		"Management URL (base DNS)")
-
+	runCmd.PersistentFlags().StringVar(&cfg.DnsURL, "dnsURL", "",
+		"Management URL (base DNS)")
 }

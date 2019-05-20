@@ -87,12 +87,12 @@
   version = "v0.0.4"
 
 [[projects]]
-  digest = "1:4df7812b3e684f3ddaa3c829611f4ad64a40c867fecfe08791a4acd8bcbe18bf"
+  digest = "1:9ff8ea771dd5ddead9b193bfac05af6e9faf547eacced603aec24a39f50dd89d"
   name = "github.com/nalej/grpc-inventory-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "c7e08087ed8b249965674ca8872643a5d85035a1"
-  version = "v0.0.9"
+  revision = "a772b1757f891474472d50aa452220d9c16a82cf"
+  version = "v0.0.10"
 
 [[projects]]
   digest = "1:0e5100c2c9fcced5b1c0f2306742cbd44dd401cfc52a4b90678c02277fb44ac2"
@@ -205,7 +205,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:4f349a7da3e52df38345913607fb3daac185365588a633088107146283b48b46"
+  digest = "1:aa38821ad1406a84f9577465ef53e56ca4d90745a710c753190bf7792d726c82"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -220,15 +220,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "f4e77d36d62c17c2336347bb2670ddbd02d092b7"
+  revision = "3ec19112720433827bbce8be9342797f5a6aaaf9"
 
 [[projects]]
   branch = "master"
-  digest = "1:d8dd58f3046f91d025e601bfd3ebecf3b70f13905106c996791b1ec1abf28428"
+  digest = "1:6d1f08e90100b5b3ca8371d27f05d7b414345a59eeff1ecbe52b8db1a128b27a"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "2d0786266e9cd132da844109aa05016f11f3df28"
+  revision = "cab07311ab81fc7f180fddf7410b604373b20a00"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -269,14 +269,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8a19759d926bef22018755cf07db0b6d46d6bc87d2abbb8b2c9d50cb67724e97"
+  digest = "1:23c5753ad3960260962085191dd606b2517ce6b5b84a2fc2febe65303ab64b5e"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/rpc/errdetails",
     "googleapis/rpc/status",
   ]
   pruneopts = ""
-  revision = "b515fa19cec88c32f305a962f34ae60068947aea"
+  revision = "995ef27e003f584103ecdd0f98e1a0cc9cbf3395"
 
 [[projects]]
   digest = "1:afc1b03a6d5ba3cbb2e0a12133e734d472e4df3b65f06e600a3d57a4b82f26cc"

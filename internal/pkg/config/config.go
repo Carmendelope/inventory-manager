@@ -25,6 +25,8 @@ type Config struct {
 	VPNServerURL string
 	// SystemModelAddress with the host:port to connect to the System Model manager
 	SystemModelAddress string
+	//DsnURL with the host to configure dns
+	DnsURL string
 }
 
 
@@ -50,6 +52,10 @@ func (conf *Config) Validate() derrors.Error {
 		return derrors.NewInvalidArgumentError("SystemModelAddress must be set")
 	}
 
+	if conf.DnsURL == "" {
+		return derrors.NewInvalidArgumentError("DnsURL must be set")
+	}
+
 	return nil
 }
 
@@ -61,4 +67,5 @@ func (conf *Config) Print() {
 	log.Info().Str("URL", conf.SystemModelAddress).Msg("System Model component")
 	log.Info().Str("URL", conf.ManagementClusterURL).Msg("Management cluster")
 	log.Info().Str("URL", conf.VPNServerURL).Msg("VPN Server URL")
+	log.Info().Str("URL", conf.DnsURL).Msg("DNS URL")
 }
