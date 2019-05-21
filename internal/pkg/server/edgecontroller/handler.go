@@ -5,6 +5,8 @@
 package edgecontroller
 
 import (
+	"github.com/nalej/derrors"
+
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
@@ -53,4 +55,8 @@ func (h *Handler) EICStart(_ context.Context, info *grpc_inventory_manager_go.EI
 
 func (h *Handler) UnlinkEIC(context.Context, *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
 	panic("implement me")
+}
+
+func (h *Handler) ConfigureEIC(context.Context, *grpc_inventory_manager_go.ConfigureEICRequest) (*grpc_common_go.Success, error) {
+	return nil, derrors.NewUnimplementedError("ConfigureEIC is not implemented")
 }
