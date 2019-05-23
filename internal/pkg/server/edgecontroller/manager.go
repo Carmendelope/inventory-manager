@@ -18,6 +18,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// TODO: we have only one proxy, change this when more proxies are added
+const proxy = "proxy0.vpn.service.nalej"
+
 type Manager struct{
 	controllersClient grpc_inventory_go.ControllersClient
 	authxClient grpc_authx_go.InventoryClient
@@ -93,7 +96,7 @@ func (m * Manager) EICJoin(request *grpc_inventory_manager_go.EICJoinRequest) (*
 		Cacert:               "",
 		Username:             vpnCredentials.Username,
 		Password:             vpnCredentials.Password,
-		Hostname:             m.config.ManagementClusterURL,
+		Hostname:             proxy,
 	}
 	return &grpc_inventory_manager_go.EICJoinResponse{
 		OrganizationId:       added.OrganizationId,
