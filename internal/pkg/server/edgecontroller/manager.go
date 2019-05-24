@@ -97,7 +97,7 @@ func (m * Manager) EICJoin(request *grpc_inventory_manager_go.EICJoinRequest) (*
 		Username:             vpnCredentials.Username,
 		Password:             vpnCredentials.Password,
 		Hostname:             fmt.Sprintf("vpn-server.%s:5555", m.config.ManagementClusterURL),
-		Proxyname:            fmt.Sprintf("%s:443", proxy),
+		Proxyname:            fmt.Sprintf("%s:5544", proxy),
 	}
 	return &grpc_inventory_manager_go.EICJoinResponse{
 		OrganizationId:       added.OrganizationId,
