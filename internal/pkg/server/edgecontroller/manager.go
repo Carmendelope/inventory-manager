@@ -19,7 +19,7 @@ import (
 )
 
 // TODO: we have only one proxy, change this when more proxies are added
-const proxy = "proxy0.vpn.service.nalej"
+const proxy = "proxy0-vpn.service.nalej"
 
 type Manager struct{
 	controllersClient grpc_inventory_go.ControllersClient
