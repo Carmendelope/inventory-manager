@@ -4,10 +4,102 @@
 
 package inventory
 
+import (
+	"context"
+	"github.com/nalej/grpc-device-go"
+	"github.com/nalej/grpc-device-manager-go"
+	"github.com/nalej/grpc-inventory-go"
+	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/grpc-organization-go"
+	"time"
+)
+
+const DefaultTimeout = time.Second * 10
+
 type Manager struct{
+	deviceManagerClient grpc_device_manager_go.DevicesClient
+	assetsClient grpc_inventory_go.AssetsClient
+	controllersClient grpc_inventory_go.ControllersClient
 }
 
-func NewManager() Manager{
+func NewManager(deviceManagerClient grpc_device_manager_go.DevicesClient,
+	assetsClient grpc_inventory_go.AssetsClient,
+	controllersClient grpc_inventory_go.ControllersClient) Manager{
 	return Manager{
+		deviceManagerClient: deviceManagerClient,
+		assetsClient: assetsClient,
+		controllersClient:controllersClient,
 	}
+}
+
+func (m * Manager) List(organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventoryList, error) {
+
+	devices, err := m.listDevices(organizationID)
+	if err != nil{
+		return nil, err
+	}
+
+	assets, err := m.listAssets(organizationID)
+	if err != nil{
+		return nil, err
+	}
+
+	controllers, err := m.listControllers(organizationID)
+	if err != nil{
+		return nil, err
+	}
+
+	return &grpc_inventory_manager_go.InventoryList{
+		Devices:              devices,
+		Assets:               assets,
+		Controllers:          controllers,
+	}, nil
+}
+
+func (m * Manager) listDevices(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_device_manager_go.Device, error){
+	ctxDM, cancelDM := context.WithTimeout(context.Background(), DefaultTimeout)
+	defer cancelDM()
+	groups, err := m.deviceManagerClient.ListDeviceGroups(ctxDM, organizationID)
+	if err != nil{
+		return nil, err
+	}
+	result := make([]*grpc_device_manager_go.Device, 0)
+	for _, deviceGroup := range groups.Groups{
+		ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+		defer cancel()
+		deviceGroupId := &grpc_device_go.DeviceGroupId{
+			OrganizationId:       deviceGroup.OrganizationId,
+			DeviceGroupId:        deviceGroup.DeviceGroupId,
+		}
+		devices, err := m.deviceManagerClient.ListDevices(ctx, deviceGroupId)
+		if err != nil{
+			return nil, err
+		}
+		result = append(result, devices.Devices...)
+	}
+	return result, nil
+}
+
+func (m * Manager) listAssets(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_inventory_go.Asset, error){
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	defer cancel()
+	assets, err := m.assetsClient.List(ctx, organizationID)
+	if err != nil{
+		return nil, err
+	}
+	return assets.Assets, nil
+}
+
+func (m * Manager) listControllers(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_inventory_go.EdgeController, error){
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	defer cancel()
+	controllers, err := m.controllersClient.List(ctx, organizationID)
+	if err != nil{
+		return nil, err
+	}
+	return controllers.Controllers, nil
+}
+
+func (m * Manager) Summary(organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
+	panic("implement me")
 }

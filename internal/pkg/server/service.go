@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-authx-go"
+	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/inventory-manager/internal/pkg/config"
 	"github.com/nalej/inventory-manager/internal/pkg/server/agent"
@@ -36,6 +37,8 @@ type Clients struct {
 	vpnClient grpc_vpn_server_go.VPNServerClient
 	authxClient grpc_authx_go.InventoryClient
 	controllersClient grpc_inventory_go.ControllersClient
+	assetsClient grpc_inventory_go.AssetsClient
+	deviceManagerClient grpc_device_manager_go.DevicesClient
 }
 
 // GetClients creates the required connections with the remote clients.
@@ -52,11 +55,17 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create connection with system-model")
 	}
+	dmConn, err := grpc.Dial(s.Configuration.DeviceManagerAddress, grpc.WithInsecure())
+	if err != nil {
+		return nil, derrors.AsError(err, "cannot create connection with device manager")
+	}
 	imClient := grpc_vpn_server_go.NewVPNServerClient(vpnConn)
 	aClient := grpc_authx_go.NewInventoryClient(aConn)
 	smClient := grpc_inventory_go.NewControllersClient(smConn)
+	asClient := grpc_inventory_go.NewAssetsClient(smConn)
+	dmClient := grpc_device_manager_go.NewDevicesClient(dmConn)
 
-	return &Clients{imClient, aClient, smClient}, nil
+	return &Clients{imClient, aClient, smClient, asClient, dmClient}, nil
 }
 
 // Run the service, launch the REST service handler.

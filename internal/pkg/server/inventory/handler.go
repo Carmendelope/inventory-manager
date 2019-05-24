@@ -7,6 +7,8 @@ package inventory
 import (
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/nalej/inventory-manager/internal/pkg/entities"
 	"golang.org/x/net/context"
 )
 
@@ -20,10 +22,22 @@ func NewHandler(manager Manager) *Handler{
 	}
 }
 
-func (h*Handler) List(context.Context, *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.AssetList, error) {
-	panic("implement me")
+func (h*Handler) List(_ context.Context, orgID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventoryList, error) {
+	verr := entities.ValidOrganizationID(orgID)
+	if verr != nil {
+		return nil, conversions.ToGRPCError(verr)
+	}
+	list, err := h.manager.List(orgID)
+	if err != nil{
+		return nil, err
+	}
+	return list, nil
 }
 
-func (h*Handler) Summary(context.Context, *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
+func (h*Handler) Summary(_ context.Context, orgID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
+	verr := entities.ValidOrganizationID(orgID)
+	if verr != nil {
+		return nil, conversions.ToGRPCError(verr)
+	}
 	panic("implement me")
 }
