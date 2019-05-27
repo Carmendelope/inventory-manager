@@ -35,6 +35,9 @@ spec:
         - "--managementClusterURL=$(MANAGEMENT_HOST)"
         - "--systemModelAddress=system-model.__NPH_NAMESPACE:8800"
         - "--deviceManagerAddress=device-manager.__NPH_NAMESPACE:6010"
+        - "--queueAddress=broker.__NPH_NAMESPACE:6650"
+        - "--networkManagerAddress=network-manager.__NPH_NAMESPACE:8000"
+        - "--edgeInventoryProxyAddress=edge-inventory-proxy.__NPH_NAMESPACE:5544"
         - "--dnsAddress=$(DNS_HOST)"
         env:
         - name: MANAGEMENT_HOST

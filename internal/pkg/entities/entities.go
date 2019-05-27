@@ -52,3 +52,17 @@ func ValidEdgeControllerId(edgeControllerID *grpc_inventory_go.EdgeControllerId)
 	}
 	return nil
 }
+
+func ValidEICStartInfo(info *grpc_inventory_manager_go.EICStartInfo) derrors.Error{
+	if info.OrganizationId == ""{
+		return derrors.NewInvalidArgumentError("organization_id must not be empty")
+	}
+	if info.EdgeControllerId == ""{
+		return derrors.NewInvalidArgumentError("edge_controller_id must not be empty")
+	}
+	// TODO Validate IP regex
+	if info.Ip == ""{
+		return derrors.NewInvalidArgumentError("ip must not be empty")
+	}
+	return nil
+}
