@@ -94,7 +94,7 @@ func (s *Service) Run() error {
 	ecManager := edgecontroller.NewManager(clients.authxClient, clients.controllersClient, clients.vpnClient, s.Configuration)
 	ecHandler := edgecontroller.NewHandler(ecManager)
 
-	invManager := inventory.NewManager()
+	invManager := inventory.NewManager(clients.deviceManagerClient, clients.assetsClient, clients.controllersClient)
 	invHandler := inventory.NewHandler(invManager)
 
 
