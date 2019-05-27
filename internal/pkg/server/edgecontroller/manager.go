@@ -113,5 +113,30 @@ func (m * Manager) EICStart(info *grpc_inventory_manager_go.EICStartInfo) (*grpc
 }
 
 func (m * Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId) error {
-	panic("implement me")
+	// Remove credentials on the VPN
+	vpnCtx, vpnCancel := contexts.VPNManagerContext()
+	defer vpnCancel()
+	eicUsername := entities.GetEdgeControllerName(edgeControllerID.OrganizationId, edgeControllerID.EdgeControllerId)
+	deleteUserRequest := &grpc_vpn_server_go.DeleteVPNUserRequest{
+		OrganizationId:       edgeControllerID.OrganizationId,
+		Username:             eicUsername,
+	}
+	_, err := m.vpnClient.DeleteVPNUser(vpnCtx, deleteUserRequest)
+	if err != nil{
+		log.Warn().Interface("edgeControllerId", edgeControllerID).Msg("failed to delete EC from VPN")
+		return err
+	}
+	// Remove entry from SM
+
+	smCtx, smCancel := contexts.SMContext()
+	defer smCancel()
+	_, err = m.controllersClient.Remove(smCtx, edgeControllerID)
+	if err != nil{
+		log.Warn().Interface("edgeControllerId", edgeControllerID).Msg("failed to delete EC from SM")
+		return err
+	}
+	// Send a message to the EIC with the unlink throught the EIC proxy.
+
+	log.Warn().Msg("unlink EIC not fully implemented, EIC not informed")
+	return nil
 }
