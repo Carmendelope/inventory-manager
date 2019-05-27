@@ -6,8 +6,11 @@ package agent
 
 import (
 	"github.com/nalej/grpc-common-go"
+	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
-	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/nalej/inventory-manager/internal/pkg/entities"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/net/context"
 )
 
@@ -25,8 +28,13 @@ func (h*Handler) InstallAgent(context.Context, *grpc_inventory_manager_go.Instal
 	panic("implement me")
 }
 
-func (h*Handler) CreateAgentJoinToken(context.Context, *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.AgentJoinToken, error) {
-	panic("implement me")
+func (h*Handler) CreateAgentJoinToken(_ context.Context, edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_inventory_manager_go.AgentJoinToken, error) {
+	verr := entities.ValidEdgeControllerId(edgeControllerID)
+	if verr != nil {
+		return nil, conversions.ToGRPCError(verr)
+	}
+	log.Debug().Interface("edgeControllerID", edgeControllerID).Msg("triggering agent join token creation")
+	return h.manager.CreateAgentJoinToken(edgeControllerID)
 }
 
 func (h*Handler) AgentJoin(context.Context, *grpc_inventory_manager_go.AgentJoinRequest) (*grpc_inventory_manager_go.AgentJoinResponse, error) {

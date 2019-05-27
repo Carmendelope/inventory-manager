@@ -5,17 +5,20 @@
 package edgecontroller
 
 import (
+	"context"
 	"fmt"
 	"github.com/nalej/grpc-authx-go"
-	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/grpc-network-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/grpc-vpn-server-go"
 	"github.com/nalej/inventory-manager/internal/pkg/config"
 	"github.com/nalej/inventory-manager/internal/pkg/entities"
 	"github.com/nalej/inventory-manager/internal/pkg/server/contexts"
 	"github.com/rs/zerolog/log"
+	"time"
 )
 
 // TODO: we have only one proxy, change this when more proxies are added
@@ -25,6 +28,7 @@ type Manager struct{
 	controllersClient grpc_inventory_go.ControllersClient
 	authxClient grpc_authx_go.InventoryClient
 	vpnClient grpc_vpn_server_go.VPNServerClient
+	netMngrClient grpc_network_go.ServiceDNSClient
 	// EdgeControllerAPIURL with the URL of the EIC API to accept join request.
 	edgeControllerAPIURL string
     dnsUrl string
@@ -32,11 +36,12 @@ type Manager struct{
 }
 
 func NewManager(authxClient grpc_authx_go.InventoryClient, controllerClient grpc_inventory_go.ControllersClient,
-	vpnClient grpc_vpn_server_go.VPNServerClient, cfg config.Config) Manager{
+	vpnClient grpc_vpn_server_go.VPNServerClient, netManagerClient grpc_network_go.ServiceDNSClient, cfg config.Config) Manager{
 	return Manager{
 		authxClient:authxClient,
 		controllersClient:controllerClient,
 		vpnClient:vpnClient,
+		netMngrClient: netManagerClient,
 		edgeControllerAPIURL: fmt.Sprintf("eic-api.%s", cfg.ManagementClusterURL),
 		dnsUrl: cfg.DnsURL,
 		config: cfg,
@@ -106,10 +111,26 @@ func (m * Manager) EICJoin(request *grpc_inventory_manager_go.EICJoinRequest) (*
 	}, nil
 }
 
-func (m * Manager) EICStart(info *grpc_inventory_manager_go.EICStartInfo) (*grpc_common_go.Success, error) {
+func (m * Manager) EICStart(info *grpc_inventory_manager_go.EICStartInfo) error {
 	log.Debug().Interface("info", info).Msg("EICStart")
-	//TODO implement logic
-	return &grpc_common_go.Success{}, nil
+	// Update DNS entry
+	netCtx, netCancel := context.WithTimeout(context.Background(), time.Second * 10)
+	defer netCancel()
+	addRequest := &grpc_network_go.AddServiceDNSEntryRequest{
+		OrganizationId:       info.OrganizationId,
+		Fqdn:                 fmt.Sprintf("%s-vpn", info.EdgeControllerId),
+		Ip:                   info.Ip,
+		Tags:                 []string{"EIC"},
+	}
+	log.Debug().Interface("request", addRequest).Msg("registering entry")
+	_, err := m.netMngrClient.AddEntry(netCtx, addRequest)
+
+	if err != nil{
+		dErr := conversions.ToDerror(err)
+		log.Error().Str("trace", dErr.DebugReport()).Msg("cannot register edge controller IP on the DNS")
+		return err
+	}
+	return nil
 }
 
 func (m * Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId) error {
