@@ -19,6 +19,10 @@
     version="=v0.0.17"
 
 [[constraint]]
+    name="github.com/nalej/grpc-inventory-go"
+    version="=v0.0.6"
+
+[[constraint]]
     name="github.com/nalej/grpc-edge-inventory-proxy-go"
     version="=v0.0.6"
 
@@ -28,7 +32,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-network-go"
-    version="v0.0.33"
+    version="v0.0.34"
 
 [[constraint]]
     name="github.com/onsi/ginkgo"
@@ -39,9 +43,17 @@
     version="v1.4.0"
 
 [[constraint]]
+    name="github.com/nalej/nalej-bus"
+    branch="master"
+
+[[constraint]]
     name="github.com/onsi/gomega"
     version="v1.4.2"
 
 [[override]]
   source = "https://github.com/fsnotify/fsnotify/archive/v1.4.7.tar.gz"
   name = "gopkg.in/fsnotify.v1"
+
+[[constraint]]
+  name = "github.com/satori/go.uuid"
+  version = "1.1.0"
