@@ -34,8 +34,16 @@ func init() {
 		"Authx address (host:port)")
 	runCmd.PersistentFlags().StringVar(&cfg.SystemModelAddress, "systemModelAddress", "localhost:8800",
 		"System Model address (host:port)")
+	runCmd.PersistentFlags().StringVar(&cfg.DeviceManagerAddress, "deviceManagerAddress", "localhost:6010",
+		"Device Manager address (host:port)")
 	runCmd.PersistentFlags().StringVar(&cfg.ManagementClusterURL, "managementClusterURL", "nalej.cluster.local",
 		"Management URL (base DNS)")
+	runCmd.PersistentFlags().StringVar(&cfg.QueueAddress, "queueAddress", "localhost:6650",
+		"Queue address (base DNS)")
+	runCmd.PersistentFlags().StringVar(&cfg.NetworkManagerAddress, "networkManagerAddress", "localhost:8000",
+		"Network Manager address (host:port)")
+	runCmd.PersistentFlags().StringVar(&cfg.EdgeInventoryProxyAddress, "edgeInventoryProxyAddress", "localhost:5544",
+		"Edge Inventory Proxy address (host:port)")
 	runCmd.PersistentFlags().StringVar(&cfg.DnsURL, "dnsURL", "",
 		"Management URL (base DNS)")
 }

@@ -6,6 +6,7 @@ package edgecontroller
 
 import (
 	"github.com/nalej/derrors"
+	"github.com/rs/zerolog/log"
 
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-inventory-go"
@@ -13,7 +14,6 @@ import (
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/inventory-manager/internal/pkg/entities"
-	"github.com/rs/zerolog/log"
 	"golang.org/x/net/context"
 )
 
@@ -48,13 +48,28 @@ func (h *Handler) EICJoin(_ context.Context, request *grpc_inventory_manager_go.
 }
 
 func (h *Handler) EICStart(_ context.Context, info *grpc_inventory_manager_go.EICStartInfo) (*grpc_common_go.Success, error) {
-	log.Debug().Interface("info", info).Msg("EIC start")
-	// TODO Implement start logic
+	verr := entities.ValidEICStartInfo(info)
+	if verr != nil {
+		return nil, conversions.ToGRPCError(verr)
+	}
+	err := h.manager.EICStart(info)
+	if err != nil{
+		return nil, err
+	}
+	log.Info().Str("organization_id", info.OrganizationId).Str("edge_controller_id", info.EdgeControllerId).Str("IP", info.Ip).Msg("EIC start has been processed")
 	return &grpc_common_go.Success{}, nil
 }
 
-func (h *Handler) UnlinkEIC(context.Context, *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
-	panic("implement me")
+func (h *Handler) UnlinkEIC(_ context.Context, edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
+	verr := entities.ValidEdgeControllerId(edgeControllerID)
+	if verr != nil {
+		return nil, conversions.ToGRPCError(verr)
+	}
+	err := h.manager.UnlinkEIC(edgeControllerID)
+	if err != nil{
+		return nil, err
+	}
+	return &grpc_common_go.Success{}, nil
 }
 
 func (h *Handler) ConfigureEIC(context.Context, *grpc_inventory_manager_go.ConfigureEICRequest) (*grpc_common_go.Success, error) {

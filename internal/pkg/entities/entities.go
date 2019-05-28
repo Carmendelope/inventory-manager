@@ -7,6 +7,7 @@ package entities
 import (
 	"fmt"
 	"github.com/nalej/derrors"
+	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
 )
@@ -40,4 +41,28 @@ func ValidEICJoinRequest(request *grpc_inventory_manager_go.EICJoinRequest) derr
 
 func GetEdgeControllerName(organizationID string, edgeControllerID string) string {
 	return fmt.Sprintf("%s-%s.eic", organizationID, edgeControllerID)
+}
+
+func ValidEdgeControllerId(edgeControllerID *grpc_inventory_go.EdgeControllerId) derrors.Error{
+	if edgeControllerID.OrganizationId == ""{
+		return derrors.NewInvalidArgumentError("organization_id must not be empty")
+	}
+	if edgeControllerID.EdgeControllerId == ""{
+		return derrors.NewInvalidArgumentError("edge_controller_id must not be empty")
+	}
+	return nil
+}
+
+func ValidEICStartInfo(info *grpc_inventory_manager_go.EICStartInfo) derrors.Error{
+	if info.OrganizationId == ""{
+		return derrors.NewInvalidArgumentError("organization_id must not be empty")
+	}
+	if info.EdgeControllerId == ""{
+		return derrors.NewInvalidArgumentError("edge_controller_id must not be empty")
+	}
+	// TODO Validate IP regex
+	if info.Ip == ""{
+		return derrors.NewInvalidArgumentError("ip must not be empty")
+	}
+	return nil
 }
