@@ -161,3 +161,25 @@ func (m * Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerI
 	log.Warn().Msg("unlink EIC not fully implemented, EIC not informed")
 	return nil
 }
+
+func (m * Manager) EICAlive( eic *grpc_inventory_go.EdgeControllerId)  error {
+
+	ctx, cancel := contexts.SMContext()
+	defer cancel()
+	// set timestamp
+	// send a message to system-model to update the timestamp
+	_, err := m.controllersClient.Update(ctx, &grpc_inventory_go.UpdateEdgeControllerRequest{
+		OrganizationId: eic.OrganizationId,
+		EdgeControllerId: eic.EdgeControllerId,
+		AddLabels:false,
+		UpdateLastAlive: true,
+		LastAliveTimestamp: time.Now().Unix(),
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+

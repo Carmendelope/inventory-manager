@@ -49,8 +49,21 @@ func (h*Handler) AgentJoin(_ context.Context, request *grpc_inventory_manager_go
 	return h.manager.AgentJoin(request)
 }
 
-func (h*Handler) LogAgentAlive(context.Context, *grpc_inventory_manager_go.AgentIds) (*grpc_common_go.Success, error) {
-	panic("implement me")
+func (h*Handler) LogAgentAlive(_ context.Context, request *grpc_inventory_manager_go.AgentsAlive) (*grpc_common_go.Success, error) {
+	vErr := entities.ValidAgentsAlive(request)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+
+	log.Debug().Str("organization_id", request.OrganizationId).Str("edge_controller_id", request.EdgeControllerId).
+		Int("agents len", len(request.Agents) ).Msg("Agents alive")
+
+	err := h.manager.LogAgentAlive(request)
+	if err != nil {
+		return nil, err
+	}
+	return &grpc_common_go.Success{}, nil
+
 }
 
 func (h*Handler) TriggerAgentOperation(context.Context, *grpc_inventory_manager_go.AgentOpRequest) (*grpc_inventory_manager_go.AgentOpResponse, error) {
