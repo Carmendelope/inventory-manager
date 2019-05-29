@@ -101,12 +101,12 @@
   version = "v0.0.48"
 
 [[projects]]
-  digest = "1:51948f0804900ab39848e91050f06e220f2a1e4fea5852d9657f32fe892a8c2c"
+  digest = "1:8b8fb2b83a54b1489bd30d635b52e5f32374234166a098de65afb9c62fc8f20b"
   name = "github.com/nalej/grpc-bus-go"
   packages = ["."]
   pruneopts = ""
-  revision = "1d22ccbe8c4368e711bac92f4e2b29e89d90711b"
-  version = "v0.0.6"
+  revision = "0f9a72ec09b63753409dd36851eedd9e79ac2cf5"
+  version = "v0.0.7"
 
 [[projects]]
   digest = "1:44f7426538411ea9f774f96e3b102decc9f549b188e55e29ecc15be69542a96b"
@@ -165,12 +165,12 @@
   version = "v0.0.37"
 
 [[projects]]
-  digest = "1:09fb41dc9fd129e4021f026f8be8aa8d36e2b9a55cf2c66d5289fe8d726845aa"
+  digest = "1:32472a22d1ea8895060e3059fc01699ed83b3bb79ed8c4f3d13a279040d9d01f"
   name = "github.com/nalej/grpc-inventory-go"
   packages = ["."]
   pruneopts = ""
-  revision = "b3f09bbfc45a996be12f67d8cb5c0820d94c7e3a"
-  version = "v0.0.4"
+  revision = "bafe7bb86a9960c8056b36b9ae31d36154ab48f9"
+  version = "v0.0.6"
 
 [[projects]]
   digest = "1:ec0e621ef55ce24afbebeba6db6bd89c994c2c3042cafe4a84bfa1d332b3bb49"
@@ -181,12 +181,12 @@
   version = "v0.0.17"
 
 [[projects]]
-  digest = "1:fe2c9b8de19b2c070435ecea9e91b3500bf187bb44fc09f6b8f6c82055db751c"
+  digest = "1:c3fe22927eed480f0cf4dff86ffd6fe7f5c96486de90a2974489c610cf7b83ca"
   name = "github.com/nalej/grpc-network-go"
   packages = ["."]
   pruneopts = ""
-  revision = "abeff6a69ff1b83b265732b79e126fe859c11710"
-  version = "v0.0.33"
+  revision = "156c316648c07cf9ac1d23f5b92a6db5bee213fe"
+  version = "v0.0.34"
 
 [[projects]]
   digest = "1:0e5100c2c9fcced5b1c0f2306742cbd44dd401cfc52a4b90678c02277fb44ac2"
@@ -222,7 +222,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0055840372dc8bb2545a34703ea6384fa1f5a9b26ecbf834375d2a3367317ef1"
+  digest = "1:7815291627fe0fdfa090199890a8c9fec805e91a1c11d88c3c0c4c582998acfd"
   name = "github.com/nalej/nalej-bus"
   packages = [
     "pkg/bus",
@@ -231,7 +231,7 @@
     "pkg/queue/inventory/events",
   ]
   pruneopts = ""
-  revision = "ec3dcfbf1191bc9b96f457d50f22d7ab22168e3a"
+  revision = "0201a772dd44451ad07bfb1a904d36f4eb1289ca"
 
 [[projects]]
   digest = "1:a3735b0978a8b53fc2ac97a6f46ca1189f0712a00df86d6ec4cf26c1a25e6d77"
@@ -295,6 +295,14 @@
   version = "v1.14.3"
 
 [[projects]]
+  digest = "1:7f569d906bdd20d906b606415b7d794f798f91a62fcfb6a4daa6d50690fb7a3f"
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  pruneopts = ""
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
+
+[[projects]]
   digest = "1:78715f4ed019d19795e67eed1dc63f525461d925616b1ed02b72582c01362440"
   name = "github.com/spf13/cobra"
   packages = ["."]
@@ -331,11 +339,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:e58995028b90bb1d69bf0968e3f8c2543d5a9db78d1206c2b3d2571a0b8b4a88"
+  digest = "1:67eb682bc10f1293b906694c64363dca71bf4ee2f8965518727c47d080422af5"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "9cd6430ef91e39e1a0ec0470cf1321a33ef1b887"
+  revision = "adf421d2caf4ffcf74142ff5fb9ee323b21a819e"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -479,6 +487,7 @@
     "github.com/onsi/gomega",
     "github.com/rs/zerolog",
     "github.com/rs/zerolog/log",
+    "github.com/satori/go.uuid",
     "github.com/spf13/cobra",
     "golang.org/x/net/context",
     "google.golang.org/grpc",

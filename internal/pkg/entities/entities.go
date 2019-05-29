@@ -66,3 +66,16 @@ func ValidEICStartInfo(info *grpc_inventory_manager_go.EICStartInfo) derrors.Err
 	}
 	return nil
 }
+
+func ValidAgentJoinRequest (request *grpc_inventory_manager_go.AgentJoinRequest) derrors.Error {
+	if request.OrganizationId == ""{
+		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
+	}
+	if request.EdgeControllerId == ""{
+		return derrors.NewInvalidArgumentError("edge_controller_id cannot be empty")
+	}
+	if request.AgentId == "" {
+		return derrors.NewInvalidArgumentError("agent_id cannot be empty")
+	}
+	return nil
+}
