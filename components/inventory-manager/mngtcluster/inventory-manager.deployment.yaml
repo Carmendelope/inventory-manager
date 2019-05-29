@@ -31,7 +31,7 @@ spec:
         - "run"
         - "--debug"
         - "--authxAddress=authx.__NPH_NAMESPACE:8810"
-        - "--vpnManagerAddress=vpn-server.__NPH_NAMESPACE:5666"
+        - "--vpnManagerAddress=vpn-server-grpc.__NPH_NAMESPACE:5666"
         - "--managementClusterURL=$(MANAGEMENT_HOST)"
         - "--systemModelAddress=system-model.__NPH_NAMESPACE:8800"
         - "--deviceManagerAddress=device-manager.__NPH_NAMESPACE:6010"
