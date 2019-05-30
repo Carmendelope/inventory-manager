@@ -80,6 +80,14 @@ func (m * Manager) LogAgentAlive(agents * grpc_inventory_manager_go.AgentsAlive)
 		ctx, cancel := contexts.SMContext()
 		// set timestamp
 		// send a message to system-model to update the timestamp
+		// check if the IP is changed reviewing AgentsIp map
+		updateIp := false
+		ip, exists := agents.AgentsIp[agent]
+		if ! exists {
+			ip = ""
+		}else {
+			updateIp = true
+		}
 		_, err := m.assetClient.Update(ctx, &grpc_inventory_go.UpdateAssetRequest{
 			OrganizationId: agents.OrganizationId,
 			AssetId: agent,
@@ -88,6 +96,8 @@ func (m * Manager) LogAgentAlive(agents * grpc_inventory_manager_go.AgentsAlive)
 			UpdateLastOpSummary: false,
 			UpdateLastAlive: true,
 			LastAliveTimestamp: timestamp,
+			UpdateIp: updateIp,
+			EicNetIp: ip,
 		})
 		if err != nil {
 			log.Warn().Str("organizationID", agents.OrganizationId).Str("assetID", agent).Msg("enable to send alive message to sytem-model")
