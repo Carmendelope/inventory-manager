@@ -11,6 +11,7 @@ import (
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/inventory-manager/internal/pkg/config"
 	"time"
 )
 
@@ -20,15 +21,17 @@ type Manager struct{
 	deviceManagerClient grpc_device_manager_go.DevicesClient
 	assetsClient grpc_inventory_go.AssetsClient
 	controllersClient grpc_inventory_go.ControllersClient
+	cfg config.Config
 }
 
 func NewManager(deviceManagerClient grpc_device_manager_go.DevicesClient,
 	assetsClient grpc_inventory_go.AssetsClient,
-	controllersClient grpc_inventory_go.ControllersClient) Manager{
+	controllersClient grpc_inventory_go.ControllersClient, cfg config.Config) Manager{
 	return Manager{
 		deviceManagerClient: deviceManagerClient,
 		assetsClient: assetsClient,
 		controllersClient:controllersClient,
+		cfg: cfg,
 	}
 }
 
@@ -80,26 +83,82 @@ func (m * Manager) listDevices(organizationID *grpc_organization_go.Organization
 	return result, nil
 }
 
-func (m * Manager) listAssets(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_inventory_go.Asset, error){
+func (m * Manager) listAssets(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_inventory_manager_go.Asset, error){
 	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	defer cancel()
 	assets, err := m.assetsClient.List(ctx, organizationID)
 	if err != nil{
 		return nil, err
 	}
-	return assets.Assets, nil
+	result := make([]*grpc_inventory_manager_go.Asset, 0)
+	for _, asset := range assets.Assets{
+		toAdd := m.toAsset(asset)
+		result = append(result, toAdd)
+	}
+	return result, nil
 }
 
-func (m * Manager) listControllers(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_inventory_go.EdgeController, error){
+func (m * Manager) listControllers(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_inventory_manager_go.EdgeController, error){
 	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	defer cancel()
 	controllers, err := m.controllersClient.List(ctx, organizationID)
 	if err != nil{
 		return nil, err
 	}
-	return controllers.Controllers, nil
+	result := make([]*grpc_inventory_manager_go.EdgeController, 0)
+	for _, ec := range controllers.Controllers{
+		toAdd := m.toController(ec)
+		result = append(result, toAdd)
+	}
+	return result, nil
 }
 
 func (m * Manager) Summary(organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
 	panic("implement me")
+}
+
+func (m * Manager) toAsset(asset * grpc_inventory_go.Asset) *grpc_inventory_manager_go.Asset{
+	status := grpc_inventory_manager_go.ConnectedStatus_OFFLINE
+	if asset.LastAliveTimestamp != 0{
+		timeCalculated := time.Unix(asset.LastAliveTimestamp, 0).Add(m.cfg.AssetThreshold).Unix()
+		if timeCalculated > time.Now().Unix(){
+			status = grpc_inventory_manager_go.ConnectedStatus_ONLINE
+		}
+	}
+	return &grpc_inventory_manager_go.Asset{
+		OrganizationId:       asset.OrganizationId,
+		EdgeControllerId:     asset.EdgeControllerId,
+		AssetId:              asset.AssetId,
+		AgentId:              asset.AgentId,
+		Show:                 asset.Show,
+		Created:              asset.Created,
+		Labels:               asset.Labels,
+		Os:                   asset.Os,
+		Hardware:             asset.Hardware,
+		Storage:              asset.Storage,
+		EicNetIp:             asset.EicNetIp,
+		LastOpSummary:        asset.LastOpResult,
+		LastAliveTimestamp:   asset.LastAliveTimestamp,
+		Status:               status,
+	}
+}
+
+func (m*Manager) toController(ec * grpc_inventory_go.EdgeController) *grpc_inventory_manager_go.EdgeController{
+	status := grpc_inventory_manager_go.ConnectedStatus_OFFLINE
+	if ec.LastAliveTimestamp != 0{
+		timeCalculated := time.Unix(ec.LastAliveTimestamp, 0).Add(m.cfg.ControllerThreshold).Unix()
+		if timeCalculated > time.Now().Unix(){
+			status = grpc_inventory_manager_go.ConnectedStatus_ONLINE
+		}
+	}
+	return &grpc_inventory_manager_go.EdgeController{
+		OrganizationId:       ec.OrganizationId,
+		EdgeControllerId:     ec.EdgeControllerId,
+		Show:                 ec.Show,
+		Created:              ec.Created,
+		Name:                 ec.Name,
+		Labels:               ec.Labels,
+		LastAliveTimestamp:   ec.LastAliveTimestamp,
+		Status:               status,
+	}
 }

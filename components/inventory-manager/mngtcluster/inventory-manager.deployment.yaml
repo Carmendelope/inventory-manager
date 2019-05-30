@@ -39,6 +39,11 @@ spec:
         - "--networkManagerAddress=network-manager.__NPH_NAMESPACE:8000"
         - "--edgeInventoryProxyAddress=edge-inventory-proxy.__NPH_NAMESPACE:5544"
         - "--dnsURL=$(DNS_HOST)"
+        - "--caCertPath=/etc/cacert/tls.crt"
+        volumeMounts:
+        - name: mngt-ca-cert-volume
+          mountPath: "/etc/cacert"
+          readOnly: true
         env:
         - name: MANAGEMENT_HOST
           valueFrom:
@@ -54,3 +59,7 @@ spec:
           runAsUser: 2000
       imagePullSecrets:
       - name: nalej-registry
+      volumes:
+      - name: mngt-ca-cert-volume
+        secret:
+          secretName: mngt-ca-cert
