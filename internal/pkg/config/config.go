@@ -23,8 +23,6 @@ type Config struct {
 	AuthxAddress string
 	// ManagementClusterURL with the host where the management cluster resides
 	ManagementClusterURL string
-	//VPNServerURL with the URL of the VPN server accepting connections.
-	VPNServerURL string
 	// SystemModelAddress with the host:port to connect to the System Model manager
 	SystemModelAddress string
 	// DeviceManagerAddress with the host:port to connect to the Device Manager.
@@ -89,7 +87,6 @@ func (conf *Config) Print() {
 	log.Info().Str("URL", conf.SystemModelAddress).Msg("System Model component")
 	log.Info().Str("URL", conf.DeviceManagerAddress).Msg("Device Manager component")
 	log.Info().Str("URL", conf.ManagementClusterURL).Msg("Management cluster")
-	log.Info().Str("URL", conf.VPNServerURL).Msg("VPN Server URL")
 	log.Info().Str("URL", conf.QueueAddress).Msg("Queue")
 	log.Info().Str("URL", conf.NetworkManagerAddress).Msg("Network Manager")
 	log.Info().Str("URL", conf.EdgeInventoryProxyAddress).Msg("Edge Inventory Proxy")

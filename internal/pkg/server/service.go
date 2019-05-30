@@ -55,8 +55,8 @@ type BusClients struct {
 func (s*Service) GetBusClients() (*BusClients, derrors.Error) {
 	queueClient := pulsar_comcast.NewClient(s.Configuration.QueueAddress)
 	invEventsOpts := events.NewConfigInventoryEventsConsumer(1, events.ConsumableStructsInventoryEventsConsumer{
-		AgentIds:         false,
-		EdgeControllerId: false,
+		AgentsAclive:     true,
+		EdgeControllerId: true,
 		EICStartInfo:     true,
 	})
 
@@ -155,7 +155,7 @@ func (s *Service) Run() error {
 
 	// Consumer
 
-	consumer := bus.NewInventoryEventsHandler(ecHandler, busClients.inventoryEventsConsumer)
+	consumer := bus.NewInventoryEventsHandler(ecHandler, agentHandler, busClients.inventoryEventsConsumer)
 	consumer.Run()
 
 	grpcServer := grpc.NewServer()

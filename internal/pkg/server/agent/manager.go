@@ -10,6 +10,8 @@ import (
 	"github.com/nalej/grpc-edge-inventory-proxy-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/inventory-manager/internal/pkg/server/contexts"
+	"github.com/rs/zerolog/log"
 	"github.com/satori/go.uuid"
 	"time"
 )
@@ -70,8 +72,32 @@ func (m * Manager) AgentJoin(request *grpc_inventory_manager_go.AgentJoinRequest
 	}, nil
 }
 
-func (m * Manager) LogAgentAlive(agentIds *grpc_inventory_manager_go.AgentIds) (*grpc_common_go.Success, error) {
-	panic("implement me")
+// TODO: add a message in system-model to add many alive messages at once
+func (m * Manager) LogAgentAlive(agents * grpc_inventory_manager_go.AgentsAlive) error {
+
+	for agent, timestamp := range agents.Agents{
+		// send to system model a message to update the timestamp
+		ctx, cancel := contexts.SMContext()
+		// set timestamp
+		// send a message to system-model to update the timestamp
+		_, err := m.assetClient.Update(ctx, &grpc_inventory_go.UpdateAssetRequest{
+			OrganizationId: agents.OrganizationId,
+			AssetId: agent,
+			AddLabels: false,
+			RemoveLabels: false,
+			UpdateLastOpSummary: false,
+			UpdateLastAlive: true,
+			LastAliveTimestamp: timestamp,
+		})
+		if err != nil {
+			log.Warn().Str("organizationID", agents.OrganizationId).Str("assetID", agent).Msg("enable to send alive message to sytem-model")
+		}
+
+		cancel()
+	}
+
+	return nil
+
 }
 
 func (m * Manager) TriggerAgentOperation(request *grpc_inventory_manager_go.AgentOpRequest) (*grpc_inventory_manager_go.AgentOpResponse, error) {

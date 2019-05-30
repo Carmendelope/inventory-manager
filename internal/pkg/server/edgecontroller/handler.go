@@ -6,14 +6,13 @@ package edgecontroller
 
 import (
 	"github.com/nalej/derrors"
-	"github.com/rs/zerolog/log"
-
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/inventory-manager/internal/pkg/entities"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/net/context"
 )
 
@@ -74,4 +73,18 @@ func (h *Handler) UnlinkEIC(_ context.Context, edgeControllerID *grpc_inventory_
 
 func (h *Handler) ConfigureEIC(context.Context, *grpc_inventory_manager_go.ConfigureEICRequest) (*grpc_common_go.Success, error) {
 	return nil, derrors.NewUnimplementedError("ConfigureEIC is not implemented")
+}
+
+func (h *Handler) EICAlive(_ context.Context, edgeControllerID *grpc_inventory_go.EdgeControllerId,) (*grpc_common_go.Success, error) {
+	vErr := entities.ValidEdgeControllerId(edgeControllerID)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+
+	err := h.manager.EICAlive(edgeControllerID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &grpc_common_go.Success{}, nil
 }

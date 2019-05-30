@@ -79,3 +79,18 @@ func ValidAgentJoinRequest (request *grpc_inventory_manager_go.AgentJoinRequest)
 	}
 	return nil
 }
+
+func ValidAgentsAlive (request *grpc_inventory_manager_go.AgentsAlive) derrors.Error {
+	if request.OrganizationId == ""{
+		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
+	}
+	if request.EdgeControllerId == ""{
+		return derrors.NewInvalidArgumentError("edge_controller_id cannot be empty")
+	}
+	if request.Agents == nil || len(request.Agents) <= 0 {
+		return derrors.NewInvalidArgumentError("agents cannot be empty")
+	}
+	return nil
+}
+
+
