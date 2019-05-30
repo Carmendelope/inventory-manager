@@ -155,7 +155,7 @@ func (s *Service) Run() error {
 
 	// Consumer
 
-	consumer := bus.NewInventoryEventsHandler(ecHandler, busClients.inventoryEventsConsumer)
+	consumer := bus.NewInventoryEventsHandler(ecHandler, agentHandler, busClients.inventoryEventsConsumer)
 	consumer.Run()
 
 	grpcServer := grpc.NewServer()
