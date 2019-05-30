@@ -8,6 +8,8 @@ import (
 	"github.com/nalej/derrors"
 	"github.com/nalej/device-api/version"
 	"github.com/rs/zerolog/log"
+	"io/ioutil"
+	"time"
 )
 
 type Config struct {
@@ -33,7 +35,14 @@ type Config struct {
 	NetworkManagerAddress string
 	// EdgeInventoryProxyAddress with the address of the edge inventory proxy.
 	EdgeInventoryProxyAddress string
-
+	// CACertPath with the path of the CA.
+	CACertPath string
+	// CACertRaw certificate
+	CACertRaw string
+	// ControllerThreshold maximum time (seconds) between ping to decide if a controller is offline or online
+	ControllerThreshold time.Duration
+	// AssetThreshold maximum time (seconds) between ping to decide if an asset is offline or online
+	AssetThreshold time.Duration
 }
 
 
@@ -74,6 +83,14 @@ func (conf *Config) Validate() derrors.Error {
 	if conf.EdgeInventoryProxyAddress == ""{
 		return derrors.NewInvalidArgumentError("edgeInventoryProxy cannot be empty")
 	}
+	if conf.CACertPath == "" {
+		return derrors.NewInvalidArgumentError("caCertPath cannot be empty")
+	}
+
+	err := conf.loadCACert()
+	if err != nil{
+		return err
+	}
 
 	return nil
 }
@@ -90,4 +107,16 @@ func (conf *Config) Print() {
 	log.Info().Str("URL", conf.QueueAddress).Msg("Queue")
 	log.Info().Str("URL", conf.NetworkManagerAddress).Msg("Network Manager")
 	log.Info().Str("URL", conf.EdgeInventoryProxyAddress).Msg("Edge Inventory Proxy")
+	log.Info().Str("Cert Path", conf.CACertPath).Msg("CA files")
+	log.Info().Str("EdgeController", conf.ControllerThreshold.String()).Str("Asset", conf.AssetThreshold.String()).Msg("Online/Offline Threshold")
+}
+
+// LoadCert loads the CA certificate in memory.
+func (conf * Config) loadCACert() derrors.Error{
+	content, err := ioutil.ReadFile(conf.CACertPath)
+	if err != nil{
+		return derrors.AsError(err, "cannot load management CA certificate")
+	}
+	conf.CACertRaw = string(content)
+	return nil
 }

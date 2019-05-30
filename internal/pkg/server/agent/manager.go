@@ -21,13 +21,14 @@ const ProxyTimeout = time.Second * 60
 type Manager struct{
 	proxyClient grpc_edge_inventory_proxy_go.EdgeControllerProxyClient
 	assetClient grpc_inventory_go.AssetsClient
-
+	CACert string
 }
 
-func NewManager(proxyClient grpc_edge_inventory_proxy_go.EdgeControllerProxyClient, assetClient grpc_inventory_go.AssetsClient) Manager{
+func NewManager(proxyClient grpc_edge_inventory_proxy_go.EdgeControllerProxyClient, assetClient grpc_inventory_go.AssetsClient, caCert string) Manager{
 	return Manager{
 		proxyClient: proxyClient,
 		assetClient: assetClient,
+		CACert: caCert,
 	}
 }
 
@@ -69,6 +70,7 @@ func (m * Manager) AgentJoin(request *grpc_inventory_manager_go.AgentJoinRequest
 		OrganizationId: asset.OrganizationId,
 		AssetId: asset.AssetId,
 		Token: m.generateToken(),
+		CaCert: m.CACert,
 	}, nil
 }
 
