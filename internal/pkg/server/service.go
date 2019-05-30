@@ -41,6 +41,7 @@ func NewService(conf config.Config) *Service {
 type Clients struct {
 	vpnClient grpc_vpn_server_go.VPNServerClient
 	authxClient grpc_authx_go.InventoryClient
+	certClient grpc_authx_go.CertificatesClient
 	controllersClient grpc_inventory_go.ControllersClient
 	assetsClient grpc_inventory_go.AssetsClient
 	deviceManagerClient grpc_device_manager_go.DevicesClient
@@ -97,6 +98,7 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	}
 	imClient := grpc_vpn_server_go.NewVPNServerClient(vpnConn)
 	aClient := grpc_authx_go.NewInventoryClient(aConn)
+	certClient := grpc_authx_go.NewCertificatesClient(aConn)
 	smClient := grpc_inventory_go.NewControllersClient(smConn)
 	asClient := grpc_inventory_go.NewAssetsClient(smConn)
 	dmClient := grpc_device_manager_go.NewDevicesClient(dmConn)
@@ -106,6 +108,7 @@ func (s *Service) GetClients() (*Clients, derrors.Error) {
 	return &Clients{
 		imClient,
 		aClient,
+		certClient,
 		smClient,
 		asClient,
 		dmClient,
@@ -139,18 +142,20 @@ func (s *Service) Run() error {
 
 	// Create handlers
 
-	agentManager := agent.NewManager(clients.edgeInvProxyControllerClient, clients.assetsClient)
+	agentManager := agent.NewManager(
+		clients.edgeInvProxyControllerClient, clients.assetsClient, s.Configuration.CACertRaw)
 	agentHandler := agent.NewHandler(agentManager)
 
 	ecManager := edgecontroller.NewManager(
 		clients.authxClient,
+		clients.certClient,
 		clients.controllersClient,
 		clients.vpnClient,
 		clients.netManagerClient,
 		s.Configuration)
 	ecHandler := edgecontroller.NewHandler(ecManager)
 
-	invManager := inventory.NewManager(clients.deviceManagerClient, clients.assetsClient, clients.controllersClient)
+	invManager := inventory.NewManager(clients.deviceManagerClient, clients.assetsClient, clients.controllersClient, s.Configuration)
 	invHandler := inventory.NewHandler(invManager)
 
 	// Consumer
