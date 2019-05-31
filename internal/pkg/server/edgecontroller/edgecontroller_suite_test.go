@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestEdgeControllerPackage(t *testing.T){
+func TestEdgeControllerPackage(t *testing.T) {
 	gomega.RegisterFailHandler(ginkgo.Fail)
 	ginkgo.RunSpecs(t, "EdgeController Handler & Manager package suite")
 }

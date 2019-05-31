@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestAgentPackage(t *testing.T){
+func TestAgentPackage(t *testing.T) {
 	gomega.RegisterFailHandler(ginkgo.Fail)
 	ginkgo.RunSpecs(t, "Agent Handler & Manager package suite")
 }

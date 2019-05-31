@@ -14,21 +14,21 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Handler struct{
+type Handler struct {
 	manager Manager
 }
 
-func NewHandler(manager Manager) *Handler{
+func NewHandler(manager Manager) *Handler {
 	return &Handler{
-		manager:manager,
+		manager: manager,
 	}
 }
 
-func (h*Handler) InstallAgent(context.Context, *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.InstallAgentResponse, error) {
+func (h *Handler) InstallAgent(context.Context, *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.InstallAgentResponse, error) {
 	panic("implement me")
 }
 
-func (h*Handler) CreateAgentJoinToken(_ context.Context, edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_inventory_manager_go.AgentJoinToken, error) {
+func (h *Handler) CreateAgentJoinToken(_ context.Context, edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_inventory_manager_go.AgentJoinToken, error) {
 	verr := entities.ValidEdgeControllerId(edgeControllerID)
 	if verr != nil {
 		return nil, conversions.ToGRPCError(verr)
@@ -37,7 +37,7 @@ func (h*Handler) CreateAgentJoinToken(_ context.Context, edgeControllerID *grpc_
 	return h.manager.CreateAgentJoinToken(edgeControllerID)
 }
 
-func (h*Handler) AgentJoin(_ context.Context, request *grpc_inventory_manager_go.AgentJoinRequest) (*grpc_inventory_manager_go.AgentJoinResponse, error) {
+func (h *Handler) AgentJoin(_ context.Context, request *grpc_inventory_manager_go.AgentJoinRequest) (*grpc_inventory_manager_go.AgentJoinResponse, error) {
 	vErr := entities.ValidAgentJoinRequest(request)
 	if vErr != nil {
 		return nil, conversions.ToGRPCError(vErr)
@@ -49,14 +49,14 @@ func (h*Handler) AgentJoin(_ context.Context, request *grpc_inventory_manager_go
 	return h.manager.AgentJoin(request)
 }
 
-func (h*Handler) LogAgentAlive(_ context.Context, request *grpc_inventory_manager_go.AgentsAlive) (*grpc_common_go.Success, error) {
+func (h *Handler) LogAgentAlive(_ context.Context, request *grpc_inventory_manager_go.AgentsAlive) (*grpc_common_go.Success, error) {
 	vErr := entities.ValidAgentsAlive(request)
 	if vErr != nil {
 		return nil, conversions.ToGRPCError(vErr)
 	}
 
 	log.Debug().Str("organization_id", request.OrganizationId).Str("edge_controller_id", request.EdgeControllerId).
-		Int("agents len", len(request.Agents) ).Msg("Agents alive")
+		Int("agents len", len(request.Agents)).Msg("Agents alive")
 
 	err := h.manager.LogAgentAlive(request)
 	if err != nil {
@@ -66,20 +66,18 @@ func (h*Handler) LogAgentAlive(_ context.Context, request *grpc_inventory_manage
 
 }
 
-func (h*Handler) TriggerAgentOperation(context.Context, *grpc_inventory_manager_go.AgentOpRequest) (*grpc_inventory_manager_go.AgentOpResponse, error) {
+func (h *Handler) TriggerAgentOperation(context.Context, *grpc_inventory_manager_go.AgentOpRequest) (*grpc_inventory_manager_go.AgentOpResponse, error) {
 	panic("implement me")
 }
 
-func (h*Handler) CallbackAgentOperation(context.Context, *grpc_inventory_manager_go.AgentOpResponse) (*grpc_common_go.Success, error) {
+func (h *Handler) CallbackAgentOperation(context.Context, *grpc_inventory_manager_go.AgentOpResponse) (*grpc_common_go.Success, error) {
 	panic("implement me")
 }
 
-func (h*Handler) ListAgentOperations(context.Context, *grpc_inventory_manager_go.AgentId) (*grpc_inventory_manager_go.AgentOpResponseList, error) {
+func (h *Handler) ListAgentOperations(context.Context, *grpc_inventory_manager_go.AgentId) (*grpc_inventory_manager_go.AgentOpResponseList, error) {
 	panic("implement me")
 }
 
-func (h*Handler) DeleteAgentOperation(context.Context, *grpc_inventory_manager_go.AgentOperationId) (*grpc_common_go.Success, error) {
+func (h *Handler) DeleteAgentOperation(context.Context, *grpc_inventory_manager_go.AgentOperationId) (*grpc_common_go.Success, error) {
 	panic("implement me")
 }
-
-

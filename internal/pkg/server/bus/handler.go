@@ -13,21 +13,21 @@ const InventoryEventsTimeout = time.Second * 30
 
 // TODO Refactor this package to be outside of server, and move service.go to other package.
 
-type InventoryEventsHandler struct{
-	ecHandler * edgecontroller.Handler
-	agentHandler * agent.Handler
-	consumer * events.InventoryEventsConsumer
+type InventoryEventsHandler struct {
+	ecHandler    *edgecontroller.Handler
+	agentHandler *agent.Handler
+	consumer     *events.InventoryEventsConsumer
 }
 
-func NewInventoryEventsHandler(ecHandler * edgecontroller.Handler, agentHandler * agent.Handler, consumer * events.InventoryEventsConsumer) * InventoryEventsHandler{
+func NewInventoryEventsHandler(ecHandler *edgecontroller.Handler, agentHandler *agent.Handler, consumer *events.InventoryEventsConsumer) *InventoryEventsHandler {
 	return &InventoryEventsHandler{
-		ecHandler : ecHandler,
+		ecHandler:    ecHandler,
 		agentHandler: agentHandler,
-		consumer: consumer,
+		consumer:     consumer,
 	}
 }
 
-func (ieh * InventoryEventsHandler) Run(){
+func (ieh *InventoryEventsHandler) Run() {
 	go ieh.consumeEICStart()
 	go ieh.consumeEdgeControllerId()
 	go ieh.consumeAgentAlive()
@@ -35,7 +35,7 @@ func (ieh * InventoryEventsHandler) Run(){
 }
 
 // Endless loop waiting for requests
-func (ieh * InventoryEventsHandler) waitRequests() {
+func (ieh *InventoryEventsHandler) waitRequests() {
 	log.Debug().Msg("wait for requests to be received by the inventory events queue")
 	for {
 		ctx, cancel := context.WithTimeout(context.Background(), InventoryEventsTimeout)
@@ -44,9 +44,9 @@ func (ieh * InventoryEventsHandler) waitRequests() {
 		err := ieh.consumer.Consume(ctx)
 		cancel()
 		select {
-		case <- ctx.Done():
+		case <-ctx.Done():
 			// the timeout was reached
-			log.Debug().Msgf("no message received since %s",currentTime.Format(time.RFC3339))
+			log.Debug().Msgf("no message received since %s", currentTime.Format(time.RFC3339))
 		default:
 			// we received something or an error
 			if err != nil {
@@ -56,29 +56,29 @@ func (ieh * InventoryEventsHandler) waitRequests() {
 	}
 }
 
-func (ieh * InventoryEventsHandler) consumeEICStart() {
+func (ieh *InventoryEventsHandler) consumeEICStart() {
 	log.Debug().Msg("consuming EICStart")
 	for {
-		received := <- ieh.consumer.Config.ChEICStart
+		received := <-ieh.consumer.Config.ChEICStart
 		log.Debug().Interface("message", received).Msg("EICSTart received")
-		ieh.ecHandler.EICStart(nil , received)
+		ieh.ecHandler.EICStart(nil, received)
 	}
 }
 
-func (ieh * InventoryEventsHandler) consumeEdgeControllerId() {
+func (ieh *InventoryEventsHandler) consumeEdgeControllerId() {
 	log.Debug().Msg("consuming EdgeControllerId")
 	for {
-		received := <- ieh.consumer.Config.ChEdgeControllerId
+		received := <-ieh.consumer.Config.ChEdgeControllerId
 		log.Debug().Interface("message", received).Msg("EdgeControllerId received")
-		ieh.ecHandler.EICAlive(nil , received)
+		ieh.ecHandler.EICAlive(nil, received)
 	}
 }
 
-func (ieh * InventoryEventsHandler) consumeAgentAlive() {
+func (ieh *InventoryEventsHandler) consumeAgentAlive() {
 	log.Debug().Msg("consuming AgentAlive")
 	for {
-		received := <- ieh.consumer.Config.ChAgentsAlive
+		received := <-ieh.consumer.Config.ChAgentsAlive
 		log.Debug().Interface("message", received).Msg("AgentAlive received")
-		ieh.agentHandler.LogAgentAlive(nil , received)
+		ieh.agentHandler.LogAgentAlive(nil, received)
 	}
 }

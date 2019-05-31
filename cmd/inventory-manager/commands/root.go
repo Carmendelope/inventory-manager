@@ -18,9 +18,9 @@ var debugLevel bool
 var consoleLogging bool
 
 var rootCmd = &cobra.Command{
-	Use:   "inventory-manager",
-	Short: "Inventory Manager component",
-	Long:  `Inventory Manager component`,
+	Use:     "inventory-manager",
+	Short:   "Inventory Manager component",
+	Long:    `Inventory Manager component`,
 	Version: "unknown-version",
 
 	Run: func(cmd *cobra.Command, args []string) {

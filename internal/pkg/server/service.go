@@ -11,11 +11,11 @@ import (
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-edge-inventory-proxy-go"
 	"github.com/nalej/grpc-inventory-go"
+	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-network-go"
+	"github.com/nalej/grpc-vpn-server-go"
 	"github.com/nalej/inventory-manager/internal/pkg/config"
 	"github.com/nalej/inventory-manager/internal/pkg/server/agent"
-	"github.com/nalej/grpc-vpn-server-go"
-	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/inventory-manager/internal/pkg/server/bus"
 	"github.com/nalej/inventory-manager/internal/pkg/server/edgecontroller"
 	"github.com/nalej/inventory-manager/internal/pkg/server/inventory"
@@ -39,21 +39,21 @@ func NewService(conf config.Config) *Service {
 }
 
 type Clients struct {
-	vpnClient grpc_vpn_server_go.VPNServerClient
-	authxClient grpc_authx_go.InventoryClient
-	certClient grpc_authx_go.CertificatesClient
-	controllersClient grpc_inventory_go.ControllersClient
-	assetsClient grpc_inventory_go.AssetsClient
-	deviceManagerClient grpc_device_manager_go.DevicesClient
-	netManagerClient grpc_network_go.ServiceDNSClient
+	vpnClient                    grpc_vpn_server_go.VPNServerClient
+	authxClient                  grpc_authx_go.InventoryClient
+	certClient                   grpc_authx_go.CertificatesClient
+	controllersClient            grpc_inventory_go.ControllersClient
+	assetsClient                 grpc_inventory_go.AssetsClient
+	deviceManagerClient          grpc_device_manager_go.DevicesClient
+	netManagerClient             grpc_network_go.ServiceDNSClient
 	edgeInvProxyControllerClient grpc_edge_inventory_proxy_go.EdgeControllerProxyClient
 }
 
 type BusClients struct {
-	inventoryEventsConsumer * events.InventoryEventsConsumer
+	inventoryEventsConsumer *events.InventoryEventsConsumer
 }
 
-func (s*Service) GetBusClients() (*BusClients, derrors.Error) {
+func (s *Service) GetBusClients() (*BusClients, derrors.Error) {
 	queueClient := pulsar_comcast.NewClient(s.Configuration.QueueAddress)
 	invEventsOpts := events.NewConfigInventoryEventsConsumer(1, events.ConsumableStructsInventoryEventsConsumer{
 		AgentsAclive:     true,
@@ -61,7 +61,7 @@ func (s*Service) GetBusClients() (*BusClients, derrors.Error) {
 		EICStartInfo:     true,
 	})
 
-	invEventConsumer , err := events.NewInventoryEventsConsumer(queueClient, "invmngr-invevents", true, invEventsOpts)
+	invEventConsumer, err := events.NewInventoryEventsConsumer(queueClient, "invmngr-invevents", true, invEventsOpts)
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create event consumer")
 	}
@@ -131,7 +131,7 @@ func (s *Service) Run() error {
 	}
 
 	busClients, bErr := s.GetBusClients()
-	if bErr != nil{
+	if bErr != nil {
 		log.Fatal().Str("err", cErr.DebugReport()).Msg("Cannot create bus clients")
 	}
 
@@ -168,8 +168,7 @@ func (s *Service) Run() error {
 	grpc_inventory_manager_go.RegisterAgentServer(grpcServer, agentHandler)
 	grpc_inventory_manager_go.RegisterEICServer(grpcServer, ecHandler)
 
-
-	if s.Configuration.Debug{
+	if s.Configuration.Debug {
 		log.Info().Msg("Enabling gRPC server reflection")
 		// Register reflection service on gRPC server.
 		reflection.Register(grpcServer)

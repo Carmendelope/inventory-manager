@@ -45,7 +45,6 @@ type Config struct {
 	AssetThreshold time.Duration
 }
 
-
 func (conf *Config) Validate() derrors.Error {
 
 	if conf.Port <= 0 {
@@ -74,13 +73,13 @@ func (conf *Config) Validate() derrors.Error {
 	if conf.DeviceManagerAddress == "" {
 		return derrors.NewInvalidArgumentError("deviceManagerAddress must be set")
 	}
-	if conf.QueueAddress == ""{
+	if conf.QueueAddress == "" {
 		return derrors.NewInvalidArgumentError("queueAddress must not be empty")
 	}
-	if conf.NetworkManagerAddress == ""{
+	if conf.NetworkManagerAddress == "" {
 		return derrors.NewInvalidArgumentError("networkManagerAddress cannot be empty")
 	}
-	if conf.EdgeInventoryProxyAddress == ""{
+	if conf.EdgeInventoryProxyAddress == "" {
 		return derrors.NewInvalidArgumentError("edgeInventoryProxy cannot be empty")
 	}
 	if conf.CACertPath == "" {
@@ -88,7 +87,7 @@ func (conf *Config) Validate() derrors.Error {
 	}
 
 	err := conf.loadCACert()
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
@@ -112,9 +111,9 @@ func (conf *Config) Print() {
 }
 
 // LoadCert loads the CA certificate in memory.
-func (conf * Config) loadCACert() derrors.Error{
+func (conf *Config) loadCACert() derrors.Error {
 	content, err := ioutil.ReadFile(conf.CACertPath)
-	if err != nil{
+	if err != nil {
 		return derrors.AsError(err, "cannot load management CA certificate")
 	}
 	conf.CACertRaw = string(content)

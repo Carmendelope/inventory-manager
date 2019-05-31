@@ -15,21 +15,21 @@ const VPNContextTimeout = 30 * time.Second
 const SMContextTimeout = 30 * time.Second
 
 // AuthxContext generates a new gRPC for authx connections
-func AuthxContext() (context.Context, func()){
+func AuthxContext() (context.Context, func()) {
 	return context.WithTimeout(context.Background(), AuthxContextTimeout)
 }
 
 // VPNManagerContext generates a new gRPC context for VPN connections
-func VPNManagerContext() (context.Context, func()){
+func VPNManagerContext() (context.Context, func()) {
 	return context.WithTimeout(context.Background(), VPNContextTimeout)
 }
 
 // InventoryContext generates a new gRPC context for inventory connections
-func InventoryContext() (context.Context, func()){
+func InventoryContext() (context.Context, func()) {
 	return context.WithTimeout(context.Background(), InventoryContextTimeout)
 }
 
 // SMContext generates a new gRPC context for system model connections
-func SMContext() (context.Context, func()){
+func SMContext() (context.Context, func()) {
 	return context.WithTimeout(context.Background(), SMContextTimeout)
 }
