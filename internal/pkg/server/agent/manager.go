@@ -43,7 +43,12 @@ func (m *Manager) InstallAgent(request *grpc_inventory_manager_go.InstallAgentRe
 func (m *Manager) CreateAgentJoinToken(edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_inventory_manager_go.AgentJoinToken, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), ProxyTimeout)
 	defer cancel()
-	return m.proxyClient.CreateAgentJoinToken(ctx, edgeControllerID)
+	token, err := m.proxyClient.CreateAgentJoinToken(ctx, edgeControllerID)
+	if err != nil{
+		return nil, err
+	}
+	token.CaCert = m.CACert
+	return token, nil
 }
 
 func (m *Manager) AgentJoin(request *grpc_inventory_manager_go.AgentJoinRequest) (*grpc_inventory_manager_go.AgentJoinResponse, error) {
