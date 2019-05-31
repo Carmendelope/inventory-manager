@@ -16,13 +16,13 @@ import (
 	"golang.org/x/net/context"
 )
 
-type Handler struct{
+type Handler struct {
 	manager Manager
 }
 
-func NewHandler(manager Manager) *Handler{
+func NewHandler(manager Manager) *Handler {
 	return &Handler{
-		manager:manager,
+		manager: manager,
 	}
 }
 
@@ -32,7 +32,7 @@ func (h *Handler) CreateEICToken(_ context.Context, orgID *grpc_organization_go.
 		return nil, conversions.ToGRPCError(verr)
 	}
 	token, err := h.manager.CreateEICToken(orgID)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	return token, nil
@@ -52,7 +52,7 @@ func (h *Handler) EICStart(_ context.Context, info *grpc_inventory_manager_go.EI
 		return nil, conversions.ToGRPCError(verr)
 	}
 	err := h.manager.EICStart(info)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	log.Info().Str("organization_id", info.OrganizationId).Str("edge_controller_id", info.EdgeControllerId).Str("IP", info.Ip).Msg("EIC start has been processed")
@@ -65,7 +65,7 @@ func (h *Handler) UnlinkEIC(_ context.Context, edgeControllerID *grpc_inventory_
 		return nil, conversions.ToGRPCError(verr)
 	}
 	err := h.manager.UnlinkEIC(edgeControllerID)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	return &grpc_common_go.Success{}, nil
@@ -75,7 +75,7 @@ func (h *Handler) ConfigureEIC(context.Context, *grpc_inventory_manager_go.Confi
 	return nil, derrors.NewUnimplementedError("ConfigureEIC is not implemented")
 }
 
-func (h *Handler) EICAlive(_ context.Context, edgeControllerID *grpc_inventory_go.EdgeControllerId,) (*grpc_common_go.Success, error) {
+func (h *Handler) EICAlive(_ context.Context, edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
 	vErr := entities.ValidEdgeControllerId(edgeControllerID)
 	if vErr != nil {
 		return nil, conversions.ToGRPCError(vErr)

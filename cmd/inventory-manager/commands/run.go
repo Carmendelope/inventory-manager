@@ -58,5 +58,4 @@ func init() {
 	runCmd.Flags().DurationVar(&cfg.ControllerThreshold, "controllerThreshold", controllerThreshold, "Threshold between ping to decide if a controller is offline/online")
 	runCmd.Flags().DurationVar(&cfg.AssetThreshold, "assetThreshold", assetThreshold, "Threshold between ping to decide if an asset is offline/online")
 
-
 }

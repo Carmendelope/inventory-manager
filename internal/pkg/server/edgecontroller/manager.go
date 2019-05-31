@@ -101,9 +101,10 @@ func (m *Manager) EICJoin(request *grpc_inventory_manager_go.EICJoinRequest) (*g
 
 	// Create the EC certificate
 	certRequest := &grpc_authx_go.EdgeControllerCertRequest{
-		OrganizationId:   added.OrganizationId,
-		EdgeControllerId: added.EdgeControllerId,
-		Name:             request.Name,
+		OrganizationId:       added.OrganizationId,
+		EdgeControllerId:     added.EdgeControllerId,
+		Name:                 request.Name,
+		Ips:                  request.Ips,
 	}
 	authxCtx, authxCancel := contexts.AuthxContext()
 	defer authxCancel()
