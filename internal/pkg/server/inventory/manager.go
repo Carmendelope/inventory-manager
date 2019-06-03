@@ -190,5 +190,6 @@ func (m *Manager) toController(ec *grpc_inventory_go.EdgeController) *grpc_inven
 		Labels:             ec.Labels,
 		LastAliveTimestamp: ec.LastAliveTimestamp,
 		Status:             status,
+		Location:           ec.Location,
 	}
 }
