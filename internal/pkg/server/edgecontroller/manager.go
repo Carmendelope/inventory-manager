@@ -78,6 +78,7 @@ func (m *Manager) EICJoin(request *grpc_inventory_manager_go.EICJoinRequest) (*g
 		OrganizationId: request.OrganizationId,
 		Name:           request.Name,
 		Labels:         request.Labels,
+		Location:       request.Location,
 	}
 	added, err := m.controllersClient.Add(ctx, toAdd)
 	if err != nil {
