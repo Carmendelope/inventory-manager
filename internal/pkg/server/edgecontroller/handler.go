@@ -88,3 +88,15 @@ func (h *Handler) EICAlive(_ context.Context, edgeControllerID *grpc_inventory_g
 
 	return &grpc_common_go.Success{}, nil
 }
+
+// UpdateECLocation operation to update the geolocation
+func (h *Handler) UpdateECGeolocation(_ context.Context, in *grpc_inventory_manager_go.UpdateGeolocationRequest) (*grpc_inventory_go.EdgeController, error){
+	log.Info().Msg("UpdateECGeolocation")
+	vErr := entities.ValidUpdateGeolocationRequest(in)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+
+	return h.manager.UpdateECGeolocation(in)
+
+}

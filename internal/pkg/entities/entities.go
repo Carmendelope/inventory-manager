@@ -102,3 +102,13 @@ func ValidAssetID(id *grpc_inventory_go.AssetId) derrors.Error {
 	}
 	return nil
 }
+
+func ValidUpdateGeolocationRequest(request *grpc_inventory_manager_go.UpdateGeolocationRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
+	}
+	if request.EdgeControllerId == "" {
+		return derrors.NewInvalidArgumentError("edge_controller_id cannot be empty")
+	}
+	return nil
+}

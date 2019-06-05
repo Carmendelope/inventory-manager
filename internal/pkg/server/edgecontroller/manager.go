@@ -78,7 +78,7 @@ func (m *Manager) EICJoin(request *grpc_inventory_manager_go.EICJoinRequest) (*g
 		OrganizationId: request.OrganizationId,
 		Name:           request.Name,
 		Labels:         request.Labels,
-		Location:       request.Location,
+		Geolocation:    request.Geolocation,
 	}
 	added, err := m.controllersClient.Add(ctx, toAdd)
 	if err != nil {
@@ -193,6 +193,7 @@ func (m *Manager) EICAlive(eic *grpc_inventory_go.EdgeControllerId) error {
 		AddLabels:          false,
 		UpdateLastAlive:    true,
 		LastAliveTimestamp: time.Now().Unix(),
+		UpdateGeolocation: false,
 	})
 	if err != nil {
 		return err
@@ -200,4 +201,26 @@ func (m *Manager) EICAlive(eic *grpc_inventory_go.EdgeControllerId) error {
 
 	return nil
 
+}
+
+
+func (m *Manager) UpdateECGeolocation(updateRequest *grpc_inventory_manager_go.UpdateGeolocationRequest) (*grpc_inventory_go.EdgeController, error){
+	log.Info().Msg("Manager - UpdateECGeolocation")
+
+	ctx, cancel := contexts.SMContext()
+	defer cancel()
+
+	updated , err := m.controllersClient.Update(ctx, &grpc_inventory_go.UpdateEdgeControllerRequest{
+		OrganizationId:     updateRequest.OrganizationId,
+		EdgeControllerId:   updateRequest.EdgeControllerId,
+		AddLabels:          false,
+		UpdateLastAlive:    false,
+		UpdateGeolocation:  true,
+		Geolocation: 	    updateRequest.Geolocation,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return updated, nil
 }
