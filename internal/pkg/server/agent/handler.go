@@ -66,8 +66,14 @@ func (h *Handler) LogAgentAlive(_ context.Context, request *grpc_inventory_manag
 
 }
 
-func (h *Handler) TriggerAgentOperation(context.Context, *grpc_inventory_manager_go.AgentOpRequest) (*grpc_inventory_manager_go.AgentOpResponse, error) {
-	panic("implement me")
+func (h *Handler) TriggerAgentOperation(_ context.Context, opRequest *grpc_inventory_manager_go.AgentOpRequest) (*grpc_inventory_manager_go.AgentOpResponse, error) {
+	vErr := entities.ValidAgentOpRequest(opRequest)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+	log.Debug().Interface("operation", opRequest).Msg("Trigger Agent operation")
+
+	return h.manager.TriggerAgentOperation(opRequest)
 }
 
 func (h *Handler) CallbackAgentOperation(context.Context, *grpc_inventory_manager_go.AgentOpResponse) (*grpc_common_go.Success, error) {

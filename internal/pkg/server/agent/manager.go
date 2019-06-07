@@ -6,10 +6,12 @@ package agent
 
 import (
 	"context"
+	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-edge-inventory-proxy-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
+	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/inventory-manager/internal/pkg/server/contexts"
 	"github.com/rs/zerolog/log"
 	"github.com/satori/go.uuid"
@@ -117,7 +119,30 @@ func (m *Manager) LogAgentAlive(agents *grpc_inventory_manager_go.AgentsAlive) e
 }
 
 func (m *Manager) TriggerAgentOperation(request *grpc_inventory_manager_go.AgentOpRequest) (*grpc_inventory_manager_go.AgentOpResponse, error) {
-	panic("implement me")
+
+
+	// Check if the asset_id is correct, (exist and is managed by edge_controller_id)
+	ctxSM, cancelSM := contexts.SMContext()
+	defer cancelSM()
+
+	asset, err := m.assetClient.Get(ctxSM, &grpc_inventory_go.AssetId{
+		OrganizationId: request.OrganizationId,
+		AssetId: request.AssetId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if asset.EdgeControllerId != request.EdgeControllerId {
+
+		return nil, conversions.ToDerror(derrors.NewInvalidArgumentError("this asset is not managed by the EC").WithParams("edge_controller_id", request.EdgeControllerId).WithParams("asset_id", request.AssetId))
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), ProxyTimeout)
+	defer cancel()
+
+	return m.proxyClient.TriggerAgentOperation(ctx, request)
+
 }
 
 func (m *Manager) CallbackAgentOperation(response *grpc_inventory_manager_go.AgentOpResponse) (*grpc_common_go.Success, error) {
