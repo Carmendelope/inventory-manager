@@ -155,6 +155,7 @@ func (m *Manager) toAsset(asset *grpc_inventory_go.Asset) *grpc_inventory_manage
 			status = grpc_inventory_manager_go.ConnectedStatus_ONLINE
 		}
 	}
+
 	return &grpc_inventory_manager_go.Asset{
 		OrganizationId:     asset.OrganizationId,
 		EdgeControllerId:   asset.EdgeControllerId,

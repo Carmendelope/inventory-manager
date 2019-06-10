@@ -12,6 +12,15 @@ import (
 	"github.com/nalej/grpc-organization-go"
 )
 
+
+
+var AgentOpResponseFromGRPC = map[grpc_inventory_manager_go.AgentOpStatus]grpc_inventory_go.AgentOpStatus{
+	grpc_inventory_manager_go.AgentOpStatus_SCHEDULED:grpc_inventory_go.AgentOpStatus_SCHEDULED,
+	grpc_inventory_manager_go.AgentOpStatus_SUCCESS:grpc_inventory_go.AgentOpStatus_SUCCESS,
+	grpc_inventory_manager_go.AgentOpStatus_FAIL:grpc_inventory_go.AgentOpStatus_FAIL,
+
+}
+
 func ValidEICJoinToken(request *grpc_inventory_manager_go.EICJoinToken) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError("organization_id must not be empty")
@@ -128,6 +137,23 @@ func ValidAgentOpRequest(request *grpc_inventory_manager_go.AgentOpRequest) derr
 	}
 	if request.Plugin == "" {
 		return derrors.NewInvalidArgumentError("plugin cannot be empty")
+	}
+	return nil
+}
+
+func ValidAgentOpResponse (request *grpc_inventory_manager_go.AgentOpResponse) derrors.Error {
+
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
+	}
+	if request.EdgeControllerId == "" {
+		return derrors.NewInvalidArgumentError("edge_controller_id cannot be empty")
+	}
+	if request.AssetId == "" {
+		return derrors.NewInvalidArgumentError("asset_id cannot be empty")
+	}
+	if request.OperationId == "" {
+		return derrors.NewInvalidArgumentError("operation_id cannot be empty")
 	}
 	return nil
 }
