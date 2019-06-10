@@ -21,6 +21,7 @@ import (
 	"github.com/nalej/inventory-manager/internal/pkg/server/inventory"
 	"github.com/nalej/nalej-bus/pkg/bus/pulsar-comcast"
 	"github.com/nalej/nalej-bus/pkg/queue/inventory/events"
+	"github.com/nalej/nalej-bus/pkg/queue/inventory/ops"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -51,22 +52,32 @@ type Clients struct {
 
 type BusClients struct {
 	inventoryEventsConsumer *events.InventoryEventsConsumer
+	inventoryOpsConsumer *ops.InventoryOpsConsumer
 }
 
 func (s *Service) GetBusClients() (*BusClients, derrors.Error) {
 	queueClient := pulsar_comcast.NewClient(s.Configuration.QueueAddress)
+
+	// inventory Events Consumer
 	invEventsOpts := events.NewConfigInventoryEventsConsumer(1, events.ConsumableStructsInventoryEventsConsumer{
 		AgentsAclive:     true,
 		EdgeControllerId: true,
 		EICStartInfo:     true,
 	})
-
 	invEventConsumer, err := events.NewInventoryEventsConsumer(queueClient, "invmngr-invevents", true, invEventsOpts)
 	if err != nil {
 		return nil, derrors.AsError(err, "cannot create event consumer")
 	}
+
+	// inventory Ops Consumer
+	invOpOpts := ops.NewConfigInventoryOpsConsumer(1, ops.ConsumableStructsInventoryOpsConsumer{
+		AgentOpResponse: true,
+	})
+
+	invOpConsumer, err := ops.NewInventoryOpsConsumer(queueClient, "invmng-invops", true, invOpOpts)
 	return &BusClients{
-		invEventConsumer,
+		inventoryEventsConsumer: invEventConsumer,
+		inventoryOpsConsumer: invOpConsumer,
 	}, nil
 }
 
@@ -158,10 +169,14 @@ func (s *Service) Run() error {
 	invManager := inventory.NewManager(clients.deviceManagerClient, clients.assetsClient, clients.controllersClient, s.Configuration)
 	invHandler := inventory.NewHandler(invManager)
 
-	// Consumer
+	// Consumers
 
-	consumer := bus.NewInventoryEventsHandler(ecHandler, agentHandler, busClients.inventoryEventsConsumer)
-	consumer.Run()
+	inventoryEventsConsumer := bus.NewInventoryEventsHandler(ecHandler, agentHandler, busClients.inventoryEventsConsumer)
+	inventoryEventsConsumer.Run()
+
+	inventoryOpsConsumer := bus.NewInventoryOpsHandler(agentHandler, busClients.inventoryOpsConsumer)
+	inventoryOpsConsumer.Run()
+
 
 	grpcServer := grpc.NewServer()
 	grpc_inventory_manager_go.RegisterInventoryServer(grpcServer, invHandler)

@@ -12,6 +12,7 @@ import (
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/nalej/inventory-manager/internal/pkg/entities"
 	"github.com/nalej/inventory-manager/internal/pkg/server/contexts"
 	"github.com/rs/zerolog/log"
 	"github.com/satori/go.uuid"
@@ -146,7 +147,32 @@ func (m *Manager) TriggerAgentOperation(request *grpc_inventory_manager_go.Agent
 }
 
 func (m *Manager) CallbackAgentOperation(response *grpc_inventory_manager_go.AgentOpResponse) (*grpc_common_go.Success, error) {
-	panic("implement me")
+	// Check if the asset_id is correct, (exist and is managed by edge_controller_id)
+	ctxSM, cancelSM := contexts.SMContext()
+	defer cancelSM()
+
+	opSummary := &grpc_inventory_go.AgentOpSummary{
+		OperationId: response.OperationId,
+		Timestamp: response.Timestamp,
+		Status: entities.AgentOpResponseFromGRPC[response.Status],
+		Info: response.Info,
+	}
+
+	_, err := m.assetClient.Update(ctxSM, &grpc_inventory_go.UpdateAssetRequest{
+		OrganizationId:      response.OrganizationId,
+		AssetId:             response.AssetId,
+		AddLabels:           false,
+		RemoveLabels:        false,
+		UpdateLastOpSummary: true,
+		LastOpSummary:  opSummary,
+		UpdateLastAlive:     false,
+		UpdateIp:            false,
+	})
+	if err != nil {
+		log.Warn().Str("organizationID", response.OrganizationId).Str("assetID", response.AssetId).Msg("enable to send alive message to sytem-model to store the op summary")
+	}
+
+	return &grpc_common_go.Success{}, nil
 }
 
 func (m *Manager) ListAgentOperations(agentID *grpc_inventory_manager_go.AgentId) (*grpc_inventory_manager_go.AgentOpResponseList, error) {
