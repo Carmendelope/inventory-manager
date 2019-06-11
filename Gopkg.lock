@@ -149,12 +149,12 @@
   version = "v0.0.9"
 
 [[projects]]
-  digest = "1:f4cd517d93d081a52b836713f4e0a15609dbb00798173b88e2855aa4b415cfc4"
+  digest = "1:a4eacc8cf2593ce2c76c0e9ca81fbc47564784b0c0d5f8d7d32b071ba2e15e26"
   name = "github.com/nalej/grpc-edge-inventory-proxy-go"
   packages = ["."]
   pruneopts = ""
-  revision = "129e45087b52815ba0a7fc09faeb88d98f8ef270"
-  version = "v0.0.8"
+  revision = "d09651c80e9cf5f69d5f29bae1c589058d5a15f9"
+  version = "v0.0.9"
 
 [[projects]]
   digest = "1:45793a945f1c3fadb8ac997ce0056a790fe626c221792f849ca71b86aa1a96f2"
@@ -304,12 +304,12 @@
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:78715f4ed019d19795e67eed1dc63f525461d925616b1ed02b72582c01362440"
+  digest = "1:0c63b3c7ad6d825a898f28cb854252a3b29d37700c68a117a977263f5ec94efe"
   name = "github.com/spf13/cobra"
   packages = ["."]
   pruneopts = ""
-  revision = "67fc4837d267bc9bfd6e47f77783fcc3dffc68de"
-  version = "v0.0.4"
+  revision = "f2b07da1e2c38d5f12845a4f607e2e1018cbb1f5"
+  version = "v0.0.5"
 
 [[projects]]
   digest = "1:cbaf13cdbfef0e4734ed8a7504f57fe893d471d62a35b982bf6fb3f036449a66"
@@ -321,7 +321,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:d168befeef1eb51a25ab229b1bb411ae07c7bef22ebee588c290faf3bdf4ae27"
+  digest = "1:5a56f211e7c12a65c5585c629457a2fb91d8719844ee8fab92727ea8adb5721c"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -336,15 +336,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "1492cefac77f61bc789c00f41ead8f8d7307cd21"
+  revision = "461777fb6f67e8cb9d70cda16573678d085a74cf"
 
 [[projects]]
   branch = "master"
-  digest = "1:9b8239b77c18aa2003c1020737c9d9e501ff2d486f166fb08269c5d89371271d"
+  digest = "1:e2a6a7d92d5bdb8002c65aa0916c725c4afc019827d415a46046acafc42edb16"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "7fc4e5ec1444df20dd195ae7c3bbfcd7114d3faa"
+  revision = "93c9922d18aeb82498a065f07aec7ad7fa60dfb7"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"

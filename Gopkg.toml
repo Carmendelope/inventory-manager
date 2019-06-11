@@ -24,7 +24,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-edge-inventory-proxy-go"
-    version="=v0.0.8"
+    version="=v0.0.9"
 
 [[constraint]]
     name="github.com/nalej/grpc-vpn-server-go"
