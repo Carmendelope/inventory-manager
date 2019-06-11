@@ -10,6 +10,7 @@ import (
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/inventory-manager/internal/pkg/entities"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/net/context"
 )
 
@@ -68,4 +69,14 @@ func (h *Handler) Summary(_ context.Context, orgID *grpc_organization_go.Organiz
 		return nil, conversions.ToGRPCError(verr)
 	}
 	panic("implement me")
+}
+
+func (h *Handler) UpdateAsset (_ context.Context, updateAssetRequest *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error) {
+	log.Info().Msg("Update asset")
+	vErr := entities.ValidUpdateAssetRequest(updateAssetRequest)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+
+	return h.manager.UpdateAssetLocation(updateAssetRequest)
 }

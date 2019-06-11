@@ -12,6 +12,8 @@ import (
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/inventory-manager/internal/pkg/config"
+	"github.com/nalej/inventory-manager/internal/pkg/server/contexts"
+	"github.com/rs/zerolog/log"
 	"time"
 )
 
@@ -170,6 +172,7 @@ func (m *Manager) toAsset(asset *grpc_inventory_go.Asset) *grpc_inventory_manage
 		LastOpSummary:      asset.LastOpResult,
 		LastAliveTimestamp: asset.LastAliveTimestamp,
 		Status:             status,
+		Location:           asset.Location,
 	}
 }
 
@@ -192,4 +195,28 @@ func (m *Manager) toController(ec *grpc_inventory_go.EdgeController) *grpc_inven
 		Status:             status,
 		Location:           ec.Location,
 	}
+}
+
+func (m * Manager) UpdateAssetLocation (updateAssetRequest *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error) {
+	log.Debug().Msg("Update asset location")
+
+	ctx, cancel := contexts.SMContext()
+	defer cancel()
+
+	updated , err := m.assetsClient.Update(ctx, &grpc_inventory_go.UpdateAssetRequest{
+		OrganizationId: updateAssetRequest.OrganizationId,
+		AssetId: updateAssetRequest.AssetId,
+		AddLabels: false,
+		RemoveLabels: false,
+		UpdateLastAlive: false,
+		UpdateIp: false,
+		UpdateLocation: true,
+		Location: updateAssetRequest.Location,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return updated, nil
 }
