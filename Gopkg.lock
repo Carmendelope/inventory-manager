@@ -133,20 +133,20 @@
   version = "v0.0.8"
 
 [[projects]]
-  digest = "1:d7695afbf2039f4c504d7e7b3ded13328f044c85bfab3ea999cc0605aebf8c6b"
+  digest = "1:58f74ff5deaebc0228a1b54f8b2de378ca0f0b38683acfca50defff9ad853153"
   name = "github.com/nalej/grpc-device-go"
   packages = ["."]
   pruneopts = ""
-  revision = "886db80c51d7123436cc6c74f6ddab6e263b34f9"
-  version = "v0.0.34"
+  revision = "e2377d538b0f198fb0bc19b3fb74835ffd89c496"
+  version = "v0.0.35"
 
 [[projects]]
-  digest = "1:c791d2da114389967d62c35fc298182fba94a24021c7a0df40b1f91e576b55d4"
+  digest = "1:0891b1161131a275f6f12e66259b4f84078eabd1175dbf2431c9daf5b3c44ba8"
   name = "github.com/nalej/grpc-device-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "f38aaa199f155566b27d097c6410d62b9a9d1d4a"
-  version = "v0.0.9"
+  revision = "de8ad6f5cace6f5278779d32578fead90a0acc11"
+  version = "v0.0.11"
 
 [[projects]]
   digest = "1:f4cd517d93d081a52b836713f4e0a15609dbb00798173b88e2855aa4b415cfc4"
@@ -304,12 +304,12 @@
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:78715f4ed019d19795e67eed1dc63f525461d925616b1ed02b72582c01362440"
+  digest = "1:0c63b3c7ad6d825a898f28cb854252a3b29d37700c68a117a977263f5ec94efe"
   name = "github.com/spf13/cobra"
   packages = ["."]
   pruneopts = ""
-  revision = "67fc4837d267bc9bfd6e47f77783fcc3dffc68de"
-  version = "v0.0.4"
+  revision = "f2b07da1e2c38d5f12845a4f607e2e1018cbb1f5"
+  version = "v0.0.5"
 
 [[projects]]
   digest = "1:cbaf13cdbfef0e4734ed8a7504f57fe893d471d62a35b982bf6fb3f036449a66"
@@ -321,7 +321,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:d168befeef1eb51a25ab229b1bb411ae07c7bef22ebee588c290faf3bdf4ae27"
+  digest = "1:81205bca004fdbacb381172d3e6af57740b65e4f6d1c21cef72f9e6afad096ec"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -336,15 +336,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "1492cefac77f61bc789c00f41ead8f8d7307cd21"
+  revision = "3f473d35a33aa6fdd203e306dc439b797820e3f1"
 
 [[projects]]
   branch = "master"
-  digest = "1:9b8239b77c18aa2003c1020737c9d9e501ff2d486f166fb08269c5d89371271d"
+  digest = "1:e2a6a7d92d5bdb8002c65aa0916c725c4afc019827d415a46046acafc42edb16"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "7fc4e5ec1444df20dd195ae7c3bbfcd7114d3faa"
+  revision = "93c9922d18aeb82498a065f07aec7ad7fa60dfb7"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -385,7 +385,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:52c6a188a1f16480607d7753e02cbd5ad43089d5550c725f32f46d376c946f37"
+  digest = "1:35b7c9c7e96aaebcd052de9c0b9787e22796a979e989408d7ce9a9a32de906d4"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -395,7 +395,7 @@
     "protobuf/field_mask",
   ]
   pruneopts = ""
-  revision = "eb0b1bdb6ae60fcfc41b8d907b50dfb346112301"
+  revision = "a7e196e89fd3a3c4d103ca540bd5dac3a736e375"
 
 [[projects]]
   digest = "1:6881653b963cd12dc1a9824aed5e122d0ff38e53e3ee07862f969a56ad2f2e9c"
