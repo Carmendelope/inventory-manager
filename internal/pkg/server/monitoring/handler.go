@@ -7,11 +7,9 @@ package monitoring
 import (
 	"context"
 
-	"github.com/nalej/derrors"
-
 	"github.com/nalej/grpc-inventory-manager-go"
-	_ "github.com/nalej/grpc-utils/pkg/conversions"
-	_ "github.com/nalej/inventory-manager/internal/pkg/entities"
+	"github.com/nalej/grpc-utils/pkg/conversions"
+	"github.com/nalej/inventory-manager/internal/pkg/entities"
 )
 
 type Handler struct {
@@ -25,9 +23,19 @@ func NewHandler(manager *Manager) *Handler {
 }
 
 func (h *Handler) ListMetrics(ctx context.Context, selector *grpc_inventory_manager_go.AssetSelector) (*grpc_inventory_manager_go.MetricsList, error) {
-	return nil, derrors.NewUnimplementedError("ListMetrics is not implemented")
+	derr := entities.ValidAssetSelector(selector)
+	if derr != nil {
+		return nil, conversions.ToGRPCError(derr)
+	}
+
+	return h.manager.ListMetrics(selector)
 }
 
 func (h *Handler) QueryMetrics(ctx context.Context, request *grpc_inventory_manager_go.QueryMetricsRequest) (*grpc_inventory_manager_go.QueryMetricsResult, error) {
-	return nil, derrors.NewUnimplementedError("QueryMetrics is not implemented")
+	derr := entities.ValidQueryMetricsRequest(request)
+	if derr != nil {
+		return nil, conversions.ToGRPCError(derr)
+	}
+
+	return h.manager.QueryMetrics(request)
 }
