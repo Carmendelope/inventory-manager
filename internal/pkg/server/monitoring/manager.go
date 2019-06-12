@@ -64,13 +64,39 @@ func (m *Manager) ListMetrics(selector *grpc_inventory_manager_go.AssetSelector)
 
 func (m *Manager) QueryMetrics(request *grpc_inventory_manager_go.QueryMetricsRequest) (*grpc_inventory_manager_go.QueryMetricsResult, error) {
 	// Get a selector for each relevant Edge Controller
+	selectors, derr := m.getSelectors(request.GetAssets())
+	if derr != nil {
+		return nil, conversions.ToGRPCError(derr)
+	}
 
 	// TODO [NP-1520]
 	// For now, we only allow metrics from a single edge controller
 	// - Create a request for each Edge Controller and execute
 	// - Unify the results
 
-	return nil, derrors.NewUnimplementedError("QueryMetrics is not implemented")
+	if len(selectors) > 1 {
+		return nil, derrors.NewUnimplementedError("Querying metrics from more than one edge controller not supported")
+	}
+
+	results := make([]*grpc_inventory_manager_go.QueryMetricsResult, 0, len(selectors))
+
+	for _, selector := range(selectors) {
+		proxyRequest := &grpc_inventory_manager_go.QueryMetricsRequest{
+			Assets: selector,
+			Metrics: request.GetMetrics(),
+			TimeRange: request.GetTimeRange(),
+			Aggregation: request.GetAggregation(),
+		}
+		ctx, _ := contexts.ProxyContext()
+		result, err := m.proxyClient.QueryMetrics(ctx, proxyRequest)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, result)
+	}
+
+	// We only have one
+	return results[0], nil
 }
 
 // GetSelectors will turn a single asset selector into a selector per
