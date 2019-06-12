@@ -5,6 +5,7 @@
 package inventory
 
 import (
+	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -68,4 +69,15 @@ func (h *Handler) Summary(_ context.Context, orgID *grpc_organization_go.Organiz
 		return nil, conversions.ToGRPCError(verr)
 	}
 	panic("implement me")
+}
+
+
+// UpdateAsset updates an asset in the inventory.
+func (h *Handler) UpdateAsset(ctx context.Context, in *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error){
+	return nil, nil
+}
+
+// UpdateDevice updates a device in the inventory.
+func (h *Handler) UpdateDevice(ctx context.Context, in *grpc_device_go.UpdateDeviceRequest) (*grpc_device_go.Device, error){
+	return nil, nil
 }

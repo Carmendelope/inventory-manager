@@ -182,3 +182,26 @@ func (m *Manager) ListAgentOperations(agentID *grpc_inventory_manager_go.AgentId
 func (m *Manager) DeleteAgentOperation(operationID *grpc_inventory_manager_go.AgentOperationId) (*grpc_common_go.Success, error) {
 	panic("implement me")
 }
+
+
+func (m *Manager) UninstallAgent( assetID *grpc_inventory_go.AssetId) (*grpc_common_go.Success, error){
+
+	// Check if the asset_id is correct, (exist and is managed by edge_controller_id)
+	ctxSM, cancelSM := contexts.SMContext()
+	defer cancelSM()
+
+	asset, err := m.assetClient.Get(ctxSM, assetID)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), ProxyTimeout)
+	defer cancel()
+
+	return m.proxyClient.UninstallAgent(ctx, &grpc_inventory_manager_go.FullAssetId{
+		OrganizationId: assetID.OrganizationId,
+		EdgeControllerId: asset.EdgeControllerId,
+		AssetId: assetID.AssetId,
+	})
+
+}
