@@ -7,7 +7,9 @@ package edgecontroller
 import (
 	"context"
 	"fmt"
+	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-authx-go"
+	"github.com/nalej/grpc-edge-inventory-proxy-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-network-go"
@@ -25,11 +27,13 @@ import (
 const proxy = "proxy0-vpn.service.nalej"
 
 type Manager struct {
-	controllersClient grpc_inventory_go.ControllersClient
-	authxClient       grpc_authx_go.InventoryClient
-	certClient        grpc_authx_go.CertificatesClient
-	vpnClient         grpc_vpn_server_go.VPNServerClient
-	netMngrClient     grpc_network_go.ServiceDNSClient
+	controllersClient 	grpc_inventory_go.ControllersClient
+	assetsClient  		grpc_inventory_go.AssetsClient
+	proxyClient 		grpc_edge_inventory_proxy_go.EdgeControllerProxyClient
+	authxClient       	grpc_authx_go.InventoryClient
+	certClient        	grpc_authx_go.CertificatesClient
+	vpnClient         	grpc_vpn_server_go.VPNServerClient
+	netMngrClient     	grpc_network_go.ServiceDNSClient
 	// EdgeControllerAPIURL with the URL of the EIC API to accept join request.
 	edgeControllerAPIURL string
 	dnsUrl               string
@@ -38,13 +42,16 @@ type Manager struct {
 
 func NewManager(
 	authxClient grpc_authx_go.InventoryClient, certClient grpc_authx_go.CertificatesClient, controllerClient grpc_inventory_go.ControllersClient,
-	vpnClient grpc_vpn_server_go.VPNServerClient, netManagerClient grpc_network_go.ServiceDNSClient, cfg config.Config) Manager {
+	vpnClient grpc_vpn_server_go.VPNServerClient, netManagerClient grpc_network_go.ServiceDNSClient, assetClient grpc_inventory_go.AssetsClient,
+	proxyClient grpc_edge_inventory_proxy_go.EdgeControllerProxyClient, cfg config.Config) Manager {
 	return Manager{
 		authxClient:          authxClient,
 		certClient:           certClient,
 		controllersClient:    controllerClient,
 		vpnClient:            vpnClient,
 		netMngrClient:        netManagerClient,
+		assetsClient:         assetClient,
+		proxyClient:          proxyClient,
 		edgeControllerAPIURL: fmt.Sprintf("eic-api.%s", cfg.ManagementClusterURL),
 		dnsUrl:               cfg.DnsURL,
 		config:               cfg,
@@ -153,31 +160,37 @@ func (m *Manager) EICStart(info *grpc_inventory_manager_go.EICStartInfo) error {
 }
 
 func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId) error {
-	// Remove credentials on the VPN
-	vpnCtx, vpnCancel := contexts.VPNManagerContext()
-	defer vpnCancel()
-	eicUsername := entities.GetEdgeControllerName(edgeControllerID.OrganizationId, edgeControllerID.EdgeControllerId)
-	deleteUserRequest := &grpc_vpn_server_go.DeleteVPNUserRequest{
-		OrganizationId: edgeControllerID.OrganizationId,
-		Username:       eicUsername,
-	}
-	_, err := m.vpnClient.DeleteVPNUser(vpnCtx, deleteUserRequest)
-	if err != nil {
-		log.Warn().Interface("edgeControllerId", edgeControllerID).Msg("failed to delete EC from VPN")
-		return err
-	}
-	// Remove entry from SM
 
+
+	// Check in inventory controller that the edge controller does not have any agent attached to it.
 	smCtx, smCancel := contexts.SMContext()
 	defer smCancel()
-	_, err = m.controllersClient.Remove(smCtx, edgeControllerID)
+
+	assets, err := m.assetsClient.ListControllerAssets(smCtx, edgeControllerID)
+	if err != nil {
+		return err
+	}
+	if len(assets.Assets) != 0 {
+		return conversions.ToGRPCError(derrors.NewPermissionDeniedError("Unable to unlink ec, it manages assets, delete them first"))
+	}
+
+	// Send unlink message to yhe proxy
+	proxyCtx, proxyCancel := contexts.ProxyContext()
+	defer proxyCancel()
+	_, err = m.proxyClient.UnlinkEC(proxyCtx, edgeControllerID)
+	if err != nil {
+		return err
+	}
+
+	// Remove EC
+	smCtxRem, smCancelRem := contexts.SMContext()
+	defer smCancelRem()
+	_, err = m.controllersClient.Remove(smCtxRem, edgeControllerID)
 	if err != nil {
 		log.Warn().Interface("edgeControllerId", edgeControllerID).Msg("failed to delete EC from SM")
 		return err
 	}
-	// Send a message to the EIC with the unlink throught the EIC proxy.
 
-	log.Warn().Msg("unlink EIC not fully implemented, EIC not informed")
 	return nil
 }
 
