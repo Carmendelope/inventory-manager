@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-authx-go"
+	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-edge-inventory-proxy-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
@@ -159,7 +160,7 @@ func (m *Manager) EICStart(info *grpc_inventory_manager_go.EICStartInfo) error {
 	return nil
 }
 
-func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId) error {
+func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
 
 
 	// Check in inventory controller that the edge controller does not have any agent attached to it.
@@ -168,10 +169,10 @@ func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId
 
 	assets, err := m.assetsClient.ListControllerAssets(smCtx, edgeControllerID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if len(assets.Assets) != 0 {
-		return conversions.ToGRPCError(derrors.NewPermissionDeniedError("Unable to unlink ec, it manages assets, delete them first"))
+		return nil, conversions.ToGRPCError(derrors.NewPermissionDeniedError("Unable to unlink ec, it manages assets, delete them first"))
 	}
 
 	// Send unlink message to yhe proxy
@@ -179,8 +180,25 @@ func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId
 	defer proxyCancel()
 	_, err = m.proxyClient.UnlinkEC(proxyCtx, edgeControllerID)
 	if err != nil {
-		return err
+		return nil, err
 	}
+
+	// Remove VpnUser
+	eicUsername := entities.GetEdgeControllerName(edgeControllerID.OrganizationId, edgeControllerID.EdgeControllerId)
+
+	// Create a set of credentials
+	vpnCtx, vpnCancel := contexts.VPNManagerContext()
+	defer vpnCancel()
+	eicUser := &grpc_vpn_server_go.DeleteVPNUserRequest{
+		Username:       eicUsername,
+		OrganizationId: edgeControllerID.OrganizationId,
+	}
+
+	_, err = m.vpnClient.DeleteVPNUser(vpnCtx, eicUser)
+	if err != nil {
+		return nil, err
+	}
+
 
 	// Remove EC
 	smCtxRem, smCancelRem := contexts.SMContext()
@@ -188,10 +206,10 @@ func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId
 	_, err = m.controllersClient.Remove(smCtxRem, edgeControllerID)
 	if err != nil {
 		log.Warn().Interface("edgeControllerId", edgeControllerID).Msg("failed to delete EC from SM")
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &grpc_common_go.Success{}, nil
 }
 
 func (m *Manager) EICAlive(eic *grpc_inventory_go.EdgeControllerId) error {
@@ -218,7 +236,6 @@ func (m *Manager) EICAlive(eic *grpc_inventory_go.EdgeControllerId) error {
 
 
 func (m *Manager) UpdateECGeolocation(updateRequest *grpc_inventory_manager_go.UpdateGeolocationRequest) (*grpc_inventory_go.EdgeController, error){
-	log.Info().Msg("Manager - UpdateECGeolocation")
 
 	ctx, cancel := contexts.SMContext()
 	defer cancel()

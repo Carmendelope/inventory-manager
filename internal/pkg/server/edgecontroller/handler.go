@@ -60,15 +60,12 @@ func (h *Handler) EICStart(_ context.Context, info *grpc_inventory_manager_go.EI
 }
 
 func (h *Handler) UnlinkEIC(_ context.Context, edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
-	verr := entities.ValidEdgeControllerId(edgeControllerID)
-	if verr != nil {
-		return nil, conversions.ToGRPCError(verr)
+	vErr := entities.ValidEdgeControllerId(edgeControllerID)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
 	}
-	err := h.manager.UnlinkEIC(edgeControllerID)
-	if err != nil {
-		return nil, err
-	}
-	return &grpc_common_go.Success{}, nil
+	return h.manager.UnlinkEIC(edgeControllerID)
+
 }
 
 func (h *Handler) ConfigureEIC(context.Context, *grpc_inventory_manager_go.ConfigureEICRequest) (*grpc_common_go.Success, error) {
