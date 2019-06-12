@@ -220,3 +220,24 @@ func (m * Manager) UpdateAssetLocation (updateAssetRequest *grpc_inventory_go.Up
 
 	return updated, nil
 }
+
+func (m * Manager) UpdateDeviceLocation (updateDeviceRequest *grpc_device_manager_go.UpdateDeviceRequest) (*grpc_device_manager_go.Device, error) {
+	log.Debug().Msg("Update device location")
+
+	ctx, cancel := contexts.SMContext()
+	defer cancel()
+
+	updated , err := m.deviceManagerClient.UpdateDevice(ctx, &grpc_device_manager_go.UpdateDeviceRequest{
+		OrganizationId: updateDeviceRequest.OrganizationId,
+		DeviceGroupId: updateDeviceRequest.DeviceGroupId,
+		DeviceId: updateDeviceRequest.DeviceId,
+		Enabled: updateDeviceRequest.Enabled,
+		Location: updateDeviceRequest.Location,
+	},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return updated, nil
+}
