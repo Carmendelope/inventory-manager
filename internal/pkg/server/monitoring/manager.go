@@ -11,6 +11,7 @@ import (
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-utils/pkg/conversions"
 
 	"github.com/nalej/inventory-manager/internal/pkg/server/contexts"
 )
@@ -31,20 +32,43 @@ func NewManager(proxyClient grpc_edge_inventory_proxy_go.EdgeControllerProxyClie
 
 func (m *Manager) ListMetrics(selector *grpc_inventory_manager_go.AssetSelector) (*grpc_inventory_manager_go.MetricsList, error) {
 	// Get a selector for each relevant Edge Controller
+	selectors, derr := m.getSelectors(selector)
+	if derr != nil {
+		return nil, conversions.ToGRPCError(derr)
+	}
+
+	metrics := make(map[string]bool)
 
 	// Create a request for each Edge Controller and execute
+	for _, proxyRequest := range(selectors) {
+		ctx, _ := contexts.ProxyContext()
+		list, err := m.proxyClient.ListMetrics(ctx, proxyRequest)
+		if err != nil {
+			return nil, err
+		}
+		for _, metric := range(list.GetMetrics()) {
+			metrics[metric] = true
+		}
+	}
 
 	// Unify the results
+	metricsList := make([]string, 0, len(metrics))
+	for metric := range(metrics) {
+		metricsList = append(metricsList, metric)
+	}
 
-	return nil, derrors.NewUnimplementedError("ListMetrics is not implemented")
+	return &grpc_inventory_manager_go.MetricsList{
+		Metrics: metricsList,
+	}, nil
 }
 
 func (m *Manager) QueryMetrics(request *grpc_inventory_manager_go.QueryMetricsRequest) (*grpc_inventory_manager_go.QueryMetricsResult, error) {
 	// Get a selector for each relevant Edge Controller
 
-	// Create a request for each Edge Controller and execute
-
-	// Unify the results
+	// TODO [NP-1520]
+	// For now, we only allow metrics from a single edge controller
+	// - Create a request for each Edge Controller and execute
+	// - Unify the results
 
 	return nil, derrors.NewUnimplementedError("QueryMetrics is not implemented")
 }
