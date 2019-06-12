@@ -170,7 +170,7 @@ func (s *Service) Run() error {
 	invManager := inventory.NewManager(clients.deviceManagerClient, clients.assetsClient, clients.controllersClient, s.Configuration)
 	invHandler := inventory.NewHandler(invManager)
 
-	monitoringManager := monitoring.NewManager(clients.edgeInvProxyControllerClient, clients.assetsClient)
+	monitoringManager := monitoring.NewManager(clients.edgeInvProxyControllerClient, clients.assetsClient, clients.controllersClient)
 	monitoringHandler := monitoring.NewHandler(monitoringManager)
 
 	// Consumers

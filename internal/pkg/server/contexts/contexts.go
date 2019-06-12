@@ -13,6 +13,7 @@ const InventoryContextTimeout = 30 * time.Second
 const AuthxContextTimeout = 30 * time.Second
 const VPNContextTimeout = 30 * time.Second
 const SMContextTimeout = 30 * time.Second
+const ProxyContextTimeout = 60 * time.Second
 
 // AuthxContext generates a new gRPC for authx connections
 func AuthxContext() (context.Context, func()) {
@@ -32,4 +33,9 @@ func InventoryContext() (context.Context, func()) {
 // SMContext generates a new gRPC context for system model connections
 func SMContext() (context.Context, func()) {
 	return context.WithTimeout(context.Background(), SMContextTimeout)
+}
+
+// ProxyContext generates a new gRPC context for edge inventory proxy connections
+func ProxyContext() (context.Context, func()) {
+	return context.WithTimeout(context.Background(), ProxyContextTimeout)
 }
