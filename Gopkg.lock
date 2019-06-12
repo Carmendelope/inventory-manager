@@ -101,12 +101,12 @@
   version = "v0.0.50"
 
 [[projects]]
-  digest = "1:5f9f97be8a4876a69d3a860a69daa5069446832a0fffa977226edb25ccb602bd"
+  digest = "1:0febb3fc3b1e0d59dd9cf6f49facdddf014b650e94ca74315385ce00af58ac73"
   name = "github.com/nalej/grpc-bus-go"
   packages = ["."]
   pruneopts = ""
-  revision = "d5a38f01121cd971637bd153d0b702c349d7653e"
-  version = "v0.0.9"
+  revision = "9601424f9d707a311e8ff4fc123c55b316dd050c"
+  version = "v0.0.11"
 
 [[projects]]
   digest = "1:44f7426538411ea9f774f96e3b102decc9f549b188e55e29ecc15be69542a96b"
@@ -133,28 +133,28 @@
   version = "v0.0.8"
 
 [[projects]]
-  digest = "1:d7695afbf2039f4c504d7e7b3ded13328f044c85bfab3ea999cc0605aebf8c6b"
+  digest = "1:58f74ff5deaebc0228a1b54f8b2de378ca0f0b38683acfca50defff9ad853153"
   name = "github.com/nalej/grpc-device-go"
   packages = ["."]
   pruneopts = ""
-  revision = "886db80c51d7123436cc6c74f6ddab6e263b34f9"
-  version = "v0.0.34"
+  revision = "e2377d538b0f198fb0bc19b3fb74835ffd89c496"
+  version = "v0.0.35"
 
 [[projects]]
-  digest = "1:c791d2da114389967d62c35fc298182fba94a24021c7a0df40b1f91e576b55d4"
+  digest = "1:0891b1161131a275f6f12e66259b4f84078eabd1175dbf2431c9daf5b3c44ba8"
   name = "github.com/nalej/grpc-device-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "f38aaa199f155566b27d097c6410d62b9a9d1d4a"
-  version = "v0.0.9"
+  revision = "de8ad6f5cace6f5278779d32578fead90a0acc11"
+  version = "v0.0.11"
 
 [[projects]]
-  digest = "1:a4eacc8cf2593ce2c76c0e9ca81fbc47564784b0c0d5f8d7d32b071ba2e15e26"
+  digest = "1:e14b6e2f755d732f75ffed368afa40d92f7095789e358b3b360efc6e8a0b4be6"
   name = "github.com/nalej/grpc-edge-inventory-proxy-go"
   packages = ["."]
   pruneopts = ""
-  revision = "d09651c80e9cf5f69d5f29bae1c589058d5a15f9"
-  version = "v0.0.9"
+  revision = "5793747dfcb9924c201f3a6214425d575db63cf0"
+  version = "v0.0.10"
 
 [[projects]]
   digest = "1:45793a945f1c3fadb8ac997ce0056a790fe626c221792f849ca71b86aa1a96f2"
@@ -165,28 +165,28 @@
   version = "v0.0.37"
 
 [[projects]]
-  digest = "1:c1f03436093d3192fe46383ff35fbee8bde6fd8e13a72258370af86a3fbb3b2b"
+  digest = "1:25a92d36bf8aed1e09f992e81f11c7dec7b64932b16736dcde6a584707bf6ad2"
   name = "github.com/nalej/grpc-inventory-go"
   packages = ["."]
   pruneopts = ""
-  revision = "9db910e0941209afa3851e38f972e70387e34f0e"
-  version = "v0.0.15"
+  revision = "b5d5fb2cfc5489586b269ef8a360eea563d3ab7e"
+  version = "v0.0.18"
 
 [[projects]]
-  digest = "1:50c8af477ee3c60754673b36c687262c26850fbe0b95936a844d37eff973ab80"
+  digest = "1:587ea644b81bcb8df2acb8e28f807a7d1a98655b0e11e8d556283a0fb6e4ecbd"
   name = "github.com/nalej/grpc-inventory-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "e647671983d66ba9092ee48533967e16c55b50b7"
-  version = "v0.0.30"
+  revision = "bdb67e2a7bdc952a868de3b88ab8a0cd389f0b09"
+  version = "v0.0.33"
 
 [[projects]]
-  digest = "1:9f1852ec8f2809cf18f2f5ba93515eb2d9f8e7bf755cf1cf9c229a6614853477"
+  digest = "1:2eef6636bed89a0c8ef63f96b937ca4387a9814cd57d2403fd91b73af39004ed"
   name = "github.com/nalej/grpc-network-go"
   packages = ["."]
   pruneopts = ""
-  revision = "3351718a02d354441dd67559cdfd91f549c30f51"
-  version = "v0.0.38"
+  revision = "d83e24983b95036e89d23d69af99798a9ab85ee7"
+  version = "v0.0.40"
 
 [[projects]]
   digest = "1:0e5100c2c9fcced5b1c0f2306742cbd44dd401cfc52a4b90678c02277fb44ac2"
@@ -222,7 +222,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:7b9f9a2fff061297af1a7d462a632efc579b3b8b0e0dd090ee6464729bd059e0"
+  digest = "1:f5d1d46b60b4d9286f0c80ad56a9a010a4657a8fd265f9e02dcc8e02e3e9b25f"
   name = "github.com/nalej/nalej-bus"
   packages = [
     "pkg/bus",
@@ -232,7 +232,7 @@
     "pkg/queue/inventory/ops",
   ]
   pruneopts = ""
-  revision = "b687fa613a95e7e25118a755c6d53b1ed62caf7d"
+  revision = "31be9d573fdc0490300cdfb8956ea405e9c7c0ca"
 
 [[projects]]
   digest = "1:a3735b0978a8b53fc2ac97a6f46ca1189f0712a00df86d6ec4cf26c1a25e6d77"
@@ -321,7 +321,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:5a56f211e7c12a65c5585c629457a2fb91d8719844ee8fab92727ea8adb5721c"
+  digest = "1:81205bca004fdbacb381172d3e6af57740b65e4f6d1c21cef72f9e6afad096ec"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -336,7 +336,7 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "461777fb6f67e8cb9d70cda16573678d085a74cf"
+  revision = "3f473d35a33aa6fdd203e306dc439b797820e3f1"
 
 [[projects]]
   branch = "master"
@@ -385,7 +385,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:52c6a188a1f16480607d7753e02cbd5ad43089d5550c725f32f46d376c946f37"
+  digest = "1:35b7c9c7e96aaebcd052de9c0b9787e22796a979e989408d7ce9a9a32de906d4"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -395,7 +395,7 @@
     "protobuf/field_mask",
   ]
   pruneopts = ""
-  revision = "eb0b1bdb6ae60fcfc41b8d907b50dfb346112301"
+  revision = "a7e196e89fd3a3c4d103ca540bd5dac3a736e375"
 
 [[projects]]
   digest = "1:6881653b963cd12dc1a9824aed5e122d0ff38e53e3ee07862f969a56ad2f2e9c"
