@@ -5,6 +5,8 @@
 package monitoring
 
 import (
+	"time"
+
 	"github.com/nalej/derrors"
 
 	"github.com/nalej/grpc-edge-inventory-proxy-go"
@@ -14,6 +16,8 @@ import (
 	"github.com/nalej/grpc-utils/pkg/conversions"
 
 	"github.com/nalej/inventory-manager/internal/pkg/server/contexts"
+
+	"github.com/rs/zerolog/log"
 )
 
 type Manager struct {
@@ -30,6 +34,8 @@ func NewManager(proxyClient grpc_edge_inventory_proxy_go.EdgeControllerProxyClie
 	}
 }
 
+const edgeControllerAliveTimeout = 600
+
 func (m *Manager) ListMetrics(selector *grpc_inventory_manager_go.AssetSelector) (*grpc_inventory_manager_go.MetricsList, error) {
 	// Get a selector for each relevant Edge Controller
 	selectors, derr := m.getSelectors(selector)
@@ -41,10 +47,14 @@ func (m *Manager) ListMetrics(selector *grpc_inventory_manager_go.AssetSelector)
 
 	// Create a request for each Edge Controller and execute
 	for _, proxyRequest := range(selectors) {
+		ecId := proxyRequest.GetEdgeControllerId()
+		log.Debug().Interface("request", proxyRequest).Msg("proxy request for ListMetrics")
 		ctx, _ := contexts.ProxyContext()
 		list, err := m.proxyClient.ListMetrics(ctx, proxyRequest)
 		if err != nil {
-			return nil, err
+			// We still want to query to working edge controllers
+			log.Warn().Str("edge-controller-id", ecId).Err(err).Msg("failed calling ListMetrics")
+			continue
 		}
 		for _, metric := range(list.GetMetrics()) {
 			metrics[metric] = true
@@ -87,15 +97,22 @@ func (m *Manager) QueryMetrics(request *grpc_inventory_manager_go.QueryMetricsRe
 			TimeRange: request.GetTimeRange(),
 			Aggregation: request.GetAggregation(),
 		}
+		ecId := selector.GetEdgeControllerId()
+		log.Debug().Interface("request", proxyRequest).Msg("proxy request for QueryMetrics")
 		ctx, _ := contexts.ProxyContext()
 		result, err := m.proxyClient.QueryMetrics(ctx, proxyRequest)
 		if err != nil {
-			return nil, err
+			// We still want to query to working edge controllers
+			log.Warn().Str("edge-controller-id", ecId).Err(err).Msg("failed calling QueryMetrics")
+			continue
 		}
 		results = append(results, result)
 	}
 
-	// We only have one
+	// We only have one - if we have anything
+	if len(results) == 0 {
+		return &grpc_inventory_manager_go.QueryMetricsResult{}, nil
+	}
 	return results[0], nil
 }
 
@@ -113,8 +130,13 @@ func (m *Manager) getSelectors(selector *grpc_inventory_manager_go.AssetSelector
 	ecId := selector.GetEdgeControllerId()
 	assetIds := selector.GetAssetIds()
 
-	// If we have explicit assets, that's the minimum set we start from
+	// We'll always create a set of asset ids to filter, as we need to
+	// filter out assets that are deleted/disabled. If we already have
+	// a set of assets, we still need to filter out disabled assets and
+	// disabled edge controllers.
+
 	if len(assetIds) > 0 {
+		// If we have explicit assets, that's the minimum set we start from
 		for _, id := range(assetIds) {
 			ctx, _ := contexts.InventoryContext()
 			asset, err := m.assetsClient.Get(ctx, &grpc_inventory_go.AssetId{
@@ -128,68 +150,56 @@ func (m *Manager) getSelectors(selector *grpc_inventory_manager_go.AssetSelector
 				addAsset(selectors, asset)
 			}
 		}
-		return selectors, nil
-	}
-
-	// If we have no assets, no labels, no groups, we make selectors just
-	// for edge controllers
-	if len(selector.GetLabels()) == 0 && len(selector.GetGroupIds()) == 0 {
-		// With Edge Controller set, we actually just need the original
-		if ecId != "" {
-			selectors[ecId] = selector
-			return selectors, nil
-		}
-
-		// If not, we need a selector per edge controller
+	} else {
 		ctx, _ := contexts.InventoryContext()
-		ecList, err := m.controllersClient.List(ctx, &grpc_organization_go.OrganizationId{
-			OrganizationId: orgId,
-		})
-		if err != nil {
-			return nil, derrors.NewUnavailableError("unable to retrieve edge controllers", err).WithParams(orgId)
-		}
+		var assetList *grpc_inventory_go.AssetList
+		var err error
 
-		for _, ec := range(ecList.GetControllers()) {
-			id := ec.GetEdgeControllerId()
-			selectors[id] = &grpc_inventory_manager_go.AssetSelector{
+		if ecId != "" {
+			// We start with all assets for an Edge Controller
+			assetList, err = m.assetsClient.ListControllerAssets(ctx, &grpc_inventory_go.EdgeControllerId{
 				OrganizationId: orgId,
-				EdgeControllerId: id,
+				EdgeControllerId: ecId,
+			})
+			if err != nil {
+				return nil, derrors.NewUnavailableError("unable to retrieve assets for edge controller", err).WithParams(ecId)
+			}
+		} else {
+			// If there's no Edge Controller, we start with all assets for
+			// an organization
+			assetList, err = m.assetsClient.List(ctx, &grpc_organization_go.OrganizationId{
+				OrganizationId: orgId,
+			})
+			if err != nil {
+				return nil, derrors.NewUnavailableError("unable to retrieve assets for organization", err).WithParams(orgId)
 			}
 		}
 
-		return selectors, nil
+		for _, asset := range(assetList.GetAssets()) {
+			if selectedAsset(asset, selector) {
+				addAsset(selectors, asset)
+			}
+		}
 	}
 
-
-	// If we have labels or groups, we need to make the assets explicit to
-	// be able to filter
+	// Lastly, we filter out disabled and unavailable Edge Controllers
 	ctx, _ := contexts.InventoryContext()
-	var assetList *grpc_inventory_go.AssetList
-	var err error
-
-	if ecId != "" {
-		// We start with all assets for an Edge Controller
-		assetList, err = m.assetsClient.ListControllerAssets(ctx, &grpc_inventory_go.EdgeControllerId{
-			OrganizationId: orgId,
-			EdgeControllerId: ecId,
-		})
-		if err != nil {
-			return nil, derrors.NewUnavailableError("unable to retrieve assets for edge controller", err).WithParams(ecId)
-		}
-	} else {
-		// If there's no Edge Controller, we start with all assets for
-		// an organization
-		assetList, err = m.assetsClient.List(ctx, &grpc_organization_go.OrganizationId{
-			OrganizationId: orgId,
-		})
-		if err != nil {
-			return nil, derrors.NewUnavailableError("unable to retrieve assets for organization", err).WithParams(orgId)
-		}
+	ecList, err := m.controllersClient.List(ctx, &grpc_organization_go.OrganizationId{
+		OrganizationId: orgId,
+	})
+	if err != nil {
+		return nil, derrors.NewUnavailableError("unable to retrieve edge controllers", err).WithParams(orgId)
 	}
+	for _, ec := range(ecList.GetControllers()) {
+		ecId := ec.GetEdgeControllerId()
+		lastAlive := ec.GetLastAliveTimestamp()
 
-	for _, asset := range(assetList.GetAssets()) {
-		if selectedAsset(asset, selector) {
-			addAsset(selectors, asset)
+		if !ec.GetShow() {
+			log.Debug().Str("edge-controller-id", ecId).Msg("removing disabled edge controller from selectors")
+			delete(selectors, ecId)
+		} else if time.Now().UTC().Unix() - lastAlive > edgeControllerAliveTimeout {
+			log.Debug().Str("edge-controller-id", ecId).Int64("last-alive", lastAlive).Msg("removing unavailable edge controller from selectors")
+			delete(selectors, ec.GetEdgeControllerId())
 		}
 	}
 
