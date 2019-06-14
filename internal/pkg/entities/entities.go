@@ -7,6 +7,7 @@ package entities
 import (
 	"fmt"
 	"github.com/nalej/derrors"
+	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -205,4 +206,25 @@ func ValidQueryMetricsRequest(request *grpc_inventory_manager_go.QueryMetricsReq
 	}
 
 	return nil
+}
+
+func ValidAssetUninstalledId (request  *grpc_inventory_go.AssetUninstalledId) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
+	}
+	if request.AssetId == "" {
+		return derrors.NewInvalidArgumentError("asset_id cannot be empty")
+	}
+	return nil
+}
+
+func NewDeviceFromGRPC(device *grpc_device_manager_go.Device) *grpc_inventory_manager_go.Device {
+	return &grpc_inventory_manager_go.Device{
+		OrganizationId: device.OrganizationId,
+		DeviceId: fmt.Sprintf("%s#%s", device.DeviceGroupId, device.DeviceId),
+		RegisterSince: device.RegisterSince,
+		Labels: device.Labels,
+		DeviceStatusName: device.DeviceStatus.String(),
+		Location: device.Location,
+	}
 }
