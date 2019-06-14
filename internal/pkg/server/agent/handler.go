@@ -93,3 +93,16 @@ func (h *Handler) ListAgentOperations(context.Context, *grpc_inventory_manager_g
 func (h *Handler) DeleteAgentOperation(context.Context, *grpc_inventory_manager_go.AgentOperationId) (*grpc_common_go.Success, error) {
 	panic("implement me")
 }
+
+// UninstallAgent operation to uninstall an agent
+func (h *Handler) UninstallAgent(_ context.Context, assetID *grpc_inventory_go.AssetId) (*grpc_common_go.Success, error){
+
+	vErr := entities.ValidAssetID(assetID)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+
+	return h.manager.UninstallAgent(assetID)
+
+}
+

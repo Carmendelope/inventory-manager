@@ -13,7 +13,7 @@ const InventoryContextTimeout = 30 * time.Second
 const AuthxContextTimeout = 30 * time.Second
 const VPNContextTimeout = 30 * time.Second
 const SMContextTimeout = 30 * time.Second
-const ProxyContextTimeout = 60 * time.Second
+const ProxyContextTimeout = 30 * time.Second
 
 // AuthxContext generates a new gRPC for authx connections
 func AuthxContext() (context.Context, func()) {

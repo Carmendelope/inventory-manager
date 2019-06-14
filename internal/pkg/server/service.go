@@ -164,6 +164,8 @@ func (s *Service) Run() error {
 		clients.controllersClient,
 		clients.vpnClient,
 		clients.netManagerClient,
+		clients.assetsClient,
+		clients.edgeInvProxyControllerClient,
 		s.Configuration)
 	ecHandler := edgecontroller.NewHandler(ecManager)
 
