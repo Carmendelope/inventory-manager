@@ -168,13 +168,40 @@ func ValidAssetSelector(selector *grpc_inventory_manager_go.AssetSelector) derro
 	return nil
 }
 
+func ValidTimeRange(timeRange *grpc_inventory_manager_go.QueryMetricsRequest_TimeRange) derrors.Error {
+	if !(timeRange.GetTimestamp() == 0) {
+		if timeRange.GetTimeStart() != 0 || timeRange.GetTimeEnd() != 0 || timeRange.GetResolution() != 0 {
+			return derrors.NewInvalidArgumentError("timestamp is set; start, end and resolution should be 0").
+				WithParams(timeRange.GetTimestamp(), timeRange.GetTimeStart(),
+				timeRange.GetTimeEnd(), timeRange.GetResolution())
+		}
+	} else {
+		if timeRange.GetTimeStart() == 0 && timeRange.GetTimeEnd() == 0 {
+			return derrors.NewInvalidArgumentError("timestamp is not set; either start, end or both should be set").
+				WithParams(timeRange.GetTimestamp(), timeRange.GetTimeStart(),
+				timeRange.GetTimeEnd(), timeRange.GetResolution())
+		}
+	}
+
+	return nil
+}
+
 func ValidQueryMetricsRequest(request *grpc_inventory_manager_go.QueryMetricsRequest) derrors.Error {
 	// We check the asset selector so we know we have an organization ID.
-	// The rest is verified by the Edge Controller so we don't have to
-	// adapt the inventory manager if functionality changes.
 	derr := ValidAssetSelector(request.GetAssets())
 	if derr != nil {
 		return derr
+	}
+
+	// Check the time range to either be a point in time or a range
+	derr = ValidTimeRange(request.GetTimeRange())
+	if derr != nil {
+		return derr
+	}
+
+	// See [NP-1520]
+	if len(request.GetAssets().GetAssetIds()) != 1 && request.GetAggregation() == grpc_inventory_manager_go.QueryMetricsRequest_NONE {
+		return derrors.NewInvalidArgumentError("metrics for more than one asset requested without aggregation method")
 	}
 
 	return nil
