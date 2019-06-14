@@ -12,6 +12,7 @@ import (
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/inventory-manager/internal/pkg/config"
+	"github.com/nalej/inventory-manager/internal/pkg/entities"
 	"time"
 )
 
@@ -59,14 +60,14 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	}, nil
 }
 
-func (m *Manager) listDevices(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_device_manager_go.Device, error) {
+func (m *Manager) listDevices(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_inventory_manager_go.Device, error) {
 	ctxDM, cancelDM := context.WithTimeout(context.Background(), DefaultTimeout)
 	defer cancelDM()
 	groups, err := m.deviceManagerClient.ListDeviceGroups(ctxDM, organizationID)
 	if err != nil {
 		return nil, err
 	}
-	result := make([]*grpc_device_manager_go.Device, 0)
+	result := make([]*grpc_inventory_manager_go.Device, 0)
 	for _, deviceGroup := range groups.Groups {
 		ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 		defer cancel()
@@ -78,7 +79,10 @@ func (m *Manager) listDevices(organizationID *grpc_organization_go.OrganizationI
 		if err != nil {
 			return nil, err
 		}
-		result = append(result, devices.Devices...)
+		for _, dev := range devices.Devices {
+			result = append(result, entities.NewDeviceFromGRPC(dev) )
+		}
+
 	}
 	return result, nil
 }
