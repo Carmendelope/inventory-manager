@@ -42,6 +42,14 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	if err != nil {
 		return nil, err
 	}
+	for i, devicesIM := range devices {
+		devicesIM.OrganizationId = devices [i].OrganizationId
+		devicesIM.Location = devices [i].Location
+		devicesIM.Labels = devices [i].Labels
+		devicesIM.RegisterSince = devices [i].RegisterSince
+		devicesIM.DeviceId = devices [i].DeviceId
+		devicesIM.DeviceStatusName = devices [i].DeviceStatusName
+	}
 
 	assets, err := m.listAssets(organizationID)
 	if err != nil {
@@ -54,20 +62,20 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	}
 
 	return &grpc_inventory_manager_go.InventoryList{
-		Devices:     devices,
+		Devices:     devicesIM,
 		Assets:      assets,
 		Controllers: controllers,
 	}, nil
 }
 
-func (m *Manager) listDevices(organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.DeviceList, error) {
+func (m *Manager) listDevices(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_inventory_go.Device, error) {
 	ctxDM, cancelDM := context.WithTimeout(context.Background(), DefaultTimeout)
 	defer cancelDM()
 	groups, err := m.deviceManagerClient.ListDeviceGroups(ctxDM, organizationID)
 	if err != nil {
 		return nil, err
 	}
-	result := make([]*grpc_inventory_manager_go.Device, 0)
+	result := make([]*grpc_inventory_go.Device, 0)
 	for _, deviceGroup := range groups.Groups {
 		ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 		defer cancel()
@@ -80,9 +88,10 @@ func (m *Manager) listDevices(organizationID *grpc_organization_go.OrganizationI
 			return nil, err
 		}
 
+
 		result = append(result, devices.Devices...)
 	}
-	return &grpc_inventory_manager_go.DeviceList{Devices: result}, nil
+	return result, nil
 }
 
 func (m*Manager) createAssetDeviceId (deviceId string, deviceGroupId string) string {
