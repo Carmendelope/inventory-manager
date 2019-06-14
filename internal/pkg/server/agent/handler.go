@@ -106,3 +106,6 @@ func (h *Handler) UninstallAgent(_ context.Context, assetID *grpc_inventory_go.A
 
 }
 
+func (h *Handler) UninstalledAgent(_ context.Context,  assetID *grpc_inventory_go.AssetUninstalledId) (*grpc_common_go.Success, error){
+	return nil, nil
+}

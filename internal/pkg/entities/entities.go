@@ -7,6 +7,7 @@ package entities
 import (
 	"fmt"
 	"github.com/nalej/derrors"
+	grpc_device_manager_go "github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -156,4 +157,19 @@ func ValidAgentOpResponse (request *grpc_inventory_manager_go.AgentOpResponse) d
 		return derrors.NewInvalidArgumentError("operation_id cannot be empty")
 	}
 	return nil
+}
+
+func NewDeviceFromGRPC (device *grpc_device_manager_go.Device) *grpc_inventory_manager_go.Device {
+	return &grpc_inventory_manager_go.Device{
+		OrganizationId: device.OrganizationId,
+		DeviceId: device.DeviceId,
+		DeviceGroupId: device.DeviceGroupId,
+		AssetDeviceId: fmt.Sprintf("%s#%s", device.DeviceGroupId, device.DeviceId),
+		RegisterSince: device.RegisterSince,
+		Labels: device.Labels,
+		Location: device.Location,
+		DeviceApiKey: device.DeviceApiKey,
+		DeviceStatus: device.DeviceStatus,
+		Enabled: device.Enabled,
+	}
 }
