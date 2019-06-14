@@ -31,6 +31,7 @@ func (ieh *InventoryEventsHandler) Run() {
 	go ieh.consumeEICStart()
 	go ieh.consumeEdgeControllerId()
 	go ieh.consumeAgentAlive()
+	go ieh.consumeAgentUninstalled()
 	go ieh.waitRequests()
 }
 
@@ -80,5 +81,13 @@ func (ieh *InventoryEventsHandler) consumeAgentAlive() {
 		received := <-ieh.consumer.Config.ChAgentsAlive
 		log.Debug().Interface("message", received).Msg("AgentAlive received")
 		ieh.agentHandler.LogAgentAlive(nil, received)
+	}
+}
+func (ieh *InventoryEventsHandler) consumeAgentUninstalled() {
+	log.Debug().Msg("consuming AgentUninstalled")
+	for {
+		received := <-ieh.consumer.Config.ChUninstalledAssetId
+		log.Debug().Interface("message", received).Msg("AgentUninstalled received")
+		ieh.agentHandler.UninstalledAgent(nil, received)
 	}
 }

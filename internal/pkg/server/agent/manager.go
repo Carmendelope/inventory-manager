@@ -205,3 +205,22 @@ func (m *Manager) UninstallAgent( assetID *grpc_inventory_go.AssetId) (*grpc_com
 	})
 
 }
+
+// UninstalledAgent method to delete an agent when it was uninstalled
+func (m *Manager) UninstalledAgent( assetID *grpc_inventory_go.AssetUninstalledId) (*grpc_common_go.Success, error) {
+
+	ctxSM, cancelSM := contexts.SMContext()
+	defer cancelSM()
+
+	_, err := m.assetClient.Remove(ctxSM, &grpc_inventory_go.AssetId{
+		OrganizationId: assetID.OrganizationId,
+		AssetId: assetID.AssetId,
+	} )
+	if err != nil {
+		return nil, err
+	}
+
+	log.Debug().Str("asset", assetID.AssetId).Msg("removed from the system")
+
+	return &grpc_common_go.Success{}, nil
+}

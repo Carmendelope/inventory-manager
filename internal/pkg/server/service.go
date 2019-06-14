@@ -63,6 +63,7 @@ func (s *Service) GetBusClients() (*BusClients, derrors.Error) {
 		AgentsAclive:     true,
 		EdgeControllerId: true,
 		EICStartInfo:     true,
+		UninstalledAssetId: true,
 	})
 	invEventConsumer, err := events.NewInventoryEventsConsumer(queueClient, "invmngr-invevents", true, invEventsOpts)
 	if err != nil {
