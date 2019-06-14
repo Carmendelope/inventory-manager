@@ -21,7 +21,6 @@ type Manager struct {
 	deviceManagerClient grpc_device_manager_go.DevicesClient
 	assetsClient        grpc_inventory_go.AssetsClient
 	controllersClient   grpc_inventory_go.ControllersClient
-	devicesClient       grpc_inventory_go.DevicesClient
 	cfg                 config.Config
 }
 
@@ -42,13 +41,17 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	if err != nil {
 		return nil, err
 	}
-	for i, devicesIM := range devices {
-		devicesIM.OrganizationId = devices [i].OrganizationId
-		devicesIM.Location = devices [i].Location
-		devicesIM.Labels = devices [i].Labels
-		devicesIM.RegisterSince = devices [i].RegisterSince
-		devicesIM.DeviceId = devices [i].DeviceId
-		devicesIM.DeviceStatusName = devices [i].DeviceStatusName
+
+	devicesIM := make([]*grpc_inventory_manager_go.Device, 0)
+	for _, device := range devices {
+		deviceIM := &grpc_inventory_manager_go.Device{
+			OrganizationId: device.OrganizationId,
+			Location: device.Location,
+			Labels: device.Labels,
+			RegisterSince: device.RegisterSince,
+			DeviceId: device.DeviceId,
+		}
+		devicesIM = append(devicesIM, deviceIM)
 	}
 
 	assets, err := m.listAssets(organizationID)
@@ -68,14 +71,14 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	}, nil
 }
 
-func (m *Manager) listDevices(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_inventory_go.Device, error) {
+func (m *Manager) listDevices(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_device_manager_go.Device, error) {
 	ctxDM, cancelDM := context.WithTimeout(context.Background(), DefaultTimeout)
 	defer cancelDM()
 	groups, err := m.deviceManagerClient.ListDeviceGroups(ctxDM, organizationID)
 	if err != nil {
 		return nil, err
 	}
-	result := make([]*grpc_inventory_go.Device, 0)
+	result := make([]*grpc_device_manager_go.Device, 0)
 	for _, deviceGroup := range groups.Groups {
 		ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 		defer cancel()
@@ -83,14 +86,17 @@ func (m *Manager) listDevices(organizationID *grpc_organization_go.OrganizationI
 			OrganizationId: deviceGroup.OrganizationId,
 			DeviceGroupId:  deviceGroup.DeviceGroupId,
 		}
-		devices, err := m.devicesClient.ListDevices(ctx, deviceGroupId)
+		devices, err := m.deviceManagerClient.ListDevices(ctx, deviceGroupId)
 		if err != nil {
 			return nil, err
 		}
 
-
+		for _, device := range devices.Devices {
+			device.DeviceId = m.createAssetDeviceId(device.DeviceId, deviceGroupId.DeviceGroupId)
+		}
 		result = append(result, devices.Devices...)
 	}
+
 	return result, nil
 }
 
