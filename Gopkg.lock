@@ -149,12 +149,12 @@
   version = "v0.0.13"
 
 [[projects]]
-  digest = "1:e14b6e2f755d732f75ffed368afa40d92f7095789e358b3b360efc6e8a0b4be6"
+  digest = "1:39b8ec80c8c4f1928c334e1bcfa4c8002943fcd600b8c2571d04166b3e92db62"
   name = "github.com/nalej/grpc-edge-inventory-proxy-go"
   packages = ["."]
   pruneopts = ""
-  revision = "5793747dfcb9924c201f3a6214425d575db63cf0"
-  version = "v0.0.10"
+  revision = "40020eba2c30e410f97fef6d2e601b369d01edc3"
+  version = "v0.0.11"
 
 [[projects]]
   digest = "1:45793a945f1c3fadb8ac997ce0056a790fe626c221792f849ca71b86aa1a96f2"

@@ -19,6 +19,7 @@ import (
 	"github.com/nalej/inventory-manager/internal/pkg/server/bus"
 	"github.com/nalej/inventory-manager/internal/pkg/server/edgecontroller"
 	"github.com/nalej/inventory-manager/internal/pkg/server/inventory"
+	"github.com/nalej/inventory-manager/internal/pkg/server/monitoring"
 	"github.com/nalej/nalej-bus/pkg/bus/pulsar-comcast"
 	"github.com/nalej/nalej-bus/pkg/queue/inventory/events"
 	"github.com/nalej/nalej-bus/pkg/queue/inventory/ops"
@@ -63,6 +64,7 @@ func (s *Service) GetBusClients() (*BusClients, derrors.Error) {
 		AgentsAclive:     true,
 		EdgeControllerId: true,
 		EICStartInfo:     true,
+		UninstalledAssetId: true,
 	})
 	invEventConsumer, err := events.NewInventoryEventsConsumer(queueClient, "invmngr-invevents", true, invEventsOpts)
 	if err != nil {
@@ -171,6 +173,9 @@ func (s *Service) Run() error {
 	invManager := inventory.NewManager(clients.deviceManagerClient, clients.assetsClient, clients.controllersClient, s.Configuration)
 	invHandler := inventory.NewHandler(invManager)
 
+	monitoringManager := monitoring.NewManager(clients.edgeInvProxyControllerClient, clients.assetsClient, clients.controllersClient)
+	monitoringHandler := monitoring.NewHandler(monitoringManager)
+
 	// Consumers
 
 	inventoryEventsConsumer := bus.NewInventoryEventsHandler(ecHandler, agentHandler, busClients.inventoryEventsConsumer)
@@ -184,6 +189,7 @@ func (s *Service) Run() error {
 	grpc_inventory_manager_go.RegisterInventoryServer(grpcServer, invHandler)
 	grpc_inventory_manager_go.RegisterAgentServer(grpcServer, agentHandler)
 	grpc_inventory_manager_go.RegisterEICServer(grpcServer, ecHandler)
+	grpc_inventory_manager_go.RegisterInventoryMonitoringServer(grpcServer, monitoringHandler)
 
 	if s.Configuration.Debug {
 		log.Info().Msg("Enabling gRPC server reflection")

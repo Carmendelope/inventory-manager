@@ -35,6 +35,7 @@ func SMContext() (context.Context, func()) {
 	return context.WithTimeout(context.Background(), SMContextTimeout)
 }
 
+// ProxyContext generates a new gRPC context for edge inventory proxy connections
 func ProxyContext() (context.Context, func()) {
 	return context.WithTimeout(context.Background(), ProxyContextTimeout)
 }
