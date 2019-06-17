@@ -101,11 +101,6 @@ func (m *Manager) listDevices(organizationID *grpc_organization_go.OrganizationI
 	return result, nil
 }
 
-func (m*Manager) createAssetDeviceId (deviceId string, deviceGroupId string) string {
-	assetDeviceId := deviceId+"#"+deviceGroupId
-	return assetDeviceId
-}
-
 func (m *Manager) listAssets(organizationID *grpc_organization_go.OrganizationId) ([]*grpc_inventory_manager_go.Asset, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
 	defer cancel()
