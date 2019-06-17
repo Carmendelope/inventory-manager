@@ -53,7 +53,6 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	}
 
 	return &grpc_inventory_manager_go.InventoryList{
-		//Devices:     devicesIM,
 		Devices: devices,
 		Assets:      assets,
 		Controllers: controllers,
