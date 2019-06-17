@@ -114,3 +114,4 @@ func (h *Handler) UninstalledAgent(_ context.Context,  assetID *grpc_inventory_g
 
 	return h.manager.UninstalledAgent(assetID)
 }
+

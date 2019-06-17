@@ -43,6 +43,20 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 		return nil, err
 	}
 
+	devicesIM := make([]*grpc_inventory_manager_go.Device, 0)
+	for _, device := range devices {
+		deviceIM := &grpc_inventory_manager_go.Device{
+			OrganizationId: device.OrganizationId,
+			Location: device.Location,
+			Labels: device.Labels,
+			RegisterSince: device.RegisterSince,
+			DeviceId: device.DeviceId,
+			DeviceGroupId: device.DeviceGroupId,
+			AssetDeviceId: device.AssetDeviceId,
+		}
+		devicesIM = append(devicesIM, deviceIM)
+	}
+
 	assets, err := m.listAssets(organizationID)
 	if err != nil {
 		return nil, err
@@ -54,7 +68,7 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	}
 
 	return &grpc_inventory_manager_go.InventoryList{
-		Devices:     devices,
+		Devices:     devicesIM,
 		Assets:      assets,
 		Controllers: controllers,
 	}, nil
@@ -80,7 +94,7 @@ func (m *Manager) listDevices(organizationID *grpc_organization_go.OrganizationI
 			return nil, err
 		}
 		for _, dev := range devices.Devices {
-			result = append(result, entities.NewDeviceFromGRPC(dev) )
+			result = append(result, entities.NewDeviceFromGRPC(dev))
 		}
 
 	}

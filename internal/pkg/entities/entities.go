@@ -159,6 +159,21 @@ func ValidAgentOpResponse (request *grpc_inventory_manager_go.AgentOpResponse) d
 	return nil
 }
 
+func NewDeviceFromGRPC (device *grpc_device_manager_go.Device) *grpc_inventory_manager_go.Device {
+	return &grpc_inventory_manager_go.Device{
+		OrganizationId: device.OrganizationId,
+		DeviceId: device.DeviceId,
+		DeviceGroupId: device.DeviceGroupId,
+		AssetDeviceId: fmt.Sprintf("%s#%s", device.DeviceGroupId, device.DeviceId),
+		RegisterSince: device.RegisterSince,
+		Labels: device.Labels,
+		Location: device.Location,
+		DeviceApiKey: device.DeviceApiKey,
+		DeviceStatus: device.DeviceStatus,
+		Enabled: device.Enabled,
+	}
+}
+
 func ValidAssetSelector(selector *grpc_inventory_manager_go.AssetSelector) derrors.Error {
 	if selector == nil {
 		return derrors.NewInvalidArgumentError("empty asset selector")
@@ -216,15 +231,4 @@ func ValidAssetUninstalledId (request  *grpc_inventory_go.AssetUninstalledId) de
 		return derrors.NewInvalidArgumentError("asset_id cannot be empty")
 	}
 	return nil
-}
-
-func NewDeviceFromGRPC(device *grpc_device_manager_go.Device) *grpc_inventory_manager_go.Device {
-	return &grpc_inventory_manager_go.Device{
-		OrganizationId: device.OrganizationId,
-		DeviceId: fmt.Sprintf("%s#%s", device.DeviceGroupId, device.DeviceId),
-		RegisterSince: device.RegisterSince,
-		Labels: device.Labels,
-		DeviceStatusName: device.DeviceStatus.String(),
-		Location: device.Location,
-	}
 }
