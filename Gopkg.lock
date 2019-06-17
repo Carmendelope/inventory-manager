@@ -101,12 +101,12 @@
   version = "v0.0.50"
 
 [[projects]]
-  digest = "1:0febb3fc3b1e0d59dd9cf6f49facdddf014b650e94ca74315385ce00af58ac73"
+  digest = "1:b1060b790f503c6e9e25bccea8ed6707c95a533cf1aabd33bf3ec72c1926ba1c"
   name = "github.com/nalej/grpc-bus-go"
   packages = ["."]
   pruneopts = ""
-  revision = "9601424f9d707a311e8ff4fc123c55b316dd050c"
-  version = "v0.0.11"
+  revision = "bfcf8b396e5631fc7feb0e33c98687559766ec88"
+  version = "v0.0.14"
 
 [[projects]]
   digest = "1:44f7426538411ea9f774f96e3b102decc9f549b188e55e29ecc15be69542a96b"
@@ -133,20 +133,20 @@
   version = "v0.0.8"
 
 [[projects]]
-  digest = "1:58f74ff5deaebc0228a1b54f8b2de378ca0f0b38683acfca50defff9ad853153"
+  digest = "1:f18300a019aa912c9ef686b87ba734cdc851295ffc72c5b3cebcad54507d57cc"
   name = "github.com/nalej/grpc-device-go"
   packages = ["."]
   pruneopts = ""
-  revision = "e2377d538b0f198fb0bc19b3fb74835ffd89c496"
-  version = "v0.0.35"
+  revision = "047fcac2cd225b26c5a768691100c7912b6202ed"
+  version = "v0.0.36"
 
 [[projects]]
-  digest = "1:a9a684146ed9e13d06e6119a658021e807b7113f2f09e345ebd3c3b173899af1"
+  digest = "1:9ef7ae7251d71ade21fb00ed620d3caeb0d44efb636f7d44e71bc53678e35c93"
   name = "github.com/nalej/grpc-device-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "3ef3775609a712e197ee86ed1fbb9361e2e368e9"
-  version = "v0.0.12"
+  revision = "3ac1cd3df9e7f8a4eb05c86f8af1d5502295ed70"
+  version = "v0.0.13"
 
 [[projects]]
   digest = "1:e14b6e2f755d732f75ffed368afa40d92f7095789e358b3b360efc6e8a0b4be6"
@@ -222,7 +222,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:dbaaf6a11e23d8d7517ad98531ad9e069fdcd20729322b7f5252a07518bb5757"
+  digest = "1:0265320dcf001c5a5ae761665d125dc420b9021b89cc53099ffb2c35b6a3e91e"
   name = "github.com/nalej/nalej-bus"
   packages = [
     "pkg/bus",
@@ -232,7 +232,7 @@
     "pkg/queue/inventory/ops",
   ]
   pruneopts = ""
-  revision = "52fbf6d72ff3982c686804f7ce81d4603c7d6763"
+  revision = "e5e1f972c76d3c855264df1f8591a0dac977327e"
 
 [[projects]]
   digest = "1:a3735b0978a8b53fc2ac97a6f46ca1189f0712a00df86d6ec4cf26c1a25e6d77"
@@ -340,11 +340,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:6e7646c0e844c2dc1950f6f9ce089ef7b978241a6c789adccdba925136d50655"
+  digest = "1:3e58d7c7f8e8393f1738c1e57295392d3a0560a1785738010ce40a87c3fe1096"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "5ed2794edfdc1c54dfb61d619c5944285f35d444"
+  revision = "15dcb6c0061f497a3f66e3ea034b629c6dd4d99e"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
