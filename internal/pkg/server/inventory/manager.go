@@ -43,7 +43,7 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 		return nil, err
 	}
 
-	devicesIM := make([]*grpc_inventory_manager_go.Device, 0)
+	/*devicesIM := make([]*grpc_inventory_manager_go.Device, 0)
 	for _, device := range devices {
 		deviceIM := &grpc_inventory_manager_go.Device{
 			OrganizationId: device.OrganizationId,
@@ -53,10 +53,11 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 			DeviceId: device.DeviceId,
 			DeviceGroupId: device.DeviceGroupId,
 			AssetDeviceId: device.AssetDeviceId,
+
 		}
 		devicesIM = append(devicesIM, deviceIM)
 	}
-
+	*/
 	assets, err := m.listAssets(organizationID)
 	if err != nil {
 		return nil, err
@@ -68,7 +69,8 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	}
 
 	return &grpc_inventory_manager_go.InventoryList{
-		Devices:     devicesIM,
+		//Devices:     devicesIM,
+		Devices: devices,
 		Assets:      assets,
 		Controllers: controllers,
 	}, nil
