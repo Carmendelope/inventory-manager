@@ -51,6 +51,8 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 			Labels: device.Labels,
 			RegisterSince: device.RegisterSince,
 			DeviceId: device.DeviceId,
+			DeviceGroupId: device.DeviceGroupId,
+			AssetDeviceId: device.AssetDeviceId,
 		}
 		devicesIM = append(devicesIM, deviceIM)
 	}
