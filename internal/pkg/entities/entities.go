@@ -171,6 +171,7 @@ func NewDeviceFromGRPC (device *grpc_device_manager_go.Device) *grpc_inventory_m
 		DeviceApiKey: device.DeviceApiKey,
 		DeviceStatus: device.DeviceStatus,
 		Enabled: device.Enabled,
+		AssetInfo: device.AssetInfo,
 	}
 }
 
