@@ -224,6 +224,10 @@ func ValidQueryMetricsRequest(request *grpc_inventory_manager_go.QueryMetricsReq
 }
 
 func ValidAssetUninstalledId (request  *grpc_inventory_go.AssetUninstalledId) derrors.Error {
+	return nil
+}
+
+func ValidUpdateAssetRequest (request *grpc_inventory_go.UpdateAssetRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
 	}

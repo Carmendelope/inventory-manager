@@ -35,7 +35,7 @@
   version = "v1.3.1"
 
 [[projects]]
-  digest = "1:00df3d333710921fa57027a908b1b0d83a7805fec4bcac92b2ce67b56eed2803"
+  digest = "1:286e87ff94e953edb261c012556764d5360fd7d892eeff43f44ccdbe1d0d2c0e"
   name = "github.com/grpc-ecosystem/grpc-gateway"
   packages = [
     "internal",
@@ -43,8 +43,8 @@
     "utilities",
   ]
   pruneopts = ""
-  revision = "cddead4ec1d10cc62f08e1fd6f8591fbe71cfff9"
-  version = "v1.9.1"
+  revision = "cd0c8ef3533e9c04e6520cac37a81fe262fb0b34"
+  version = "v1.9.2"
 
 [[projects]]
   digest = "1:b3c5b95e56c06f5aa72cb2500e6ee5f44fcd122872d4fec2023a488e561218bc"
@@ -133,20 +133,20 @@
   version = "v0.0.8"
 
 [[projects]]
-  digest = "1:f18300a019aa912c9ef686b87ba734cdc851295ffc72c5b3cebcad54507d57cc"
+  digest = "1:18162d8feec3cf2d0f1c2b65492d920d4b20f1845230ed777b606a600961b8bd"
   name = "github.com/nalej/grpc-device-go"
   packages = ["."]
   pruneopts = ""
-  revision = "047fcac2cd225b26c5a768691100c7912b6202ed"
-  version = "v0.0.36"
+  revision = "a4e4011245345cdffd93e963fd21309660c98f6a"
+  version = "v0.0.37"
 
 [[projects]]
-  digest = "1:9ef7ae7251d71ade21fb00ed620d3caeb0d44efb636f7d44e71bc53678e35c93"
+  digest = "1:8bf6a4f61d120a58f7d0f5c623dfd0767ae7719fc98f9ebd12c0cd96205c6e12"
   name = "github.com/nalej/grpc-device-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "3ac1cd3df9e7f8a4eb05c86f8af1d5502295ed70"
-  version = "v0.0.13"
+  revision = "63520a6d8f6e6adaa2e49dcd0fd970eaf285e1de"
+  version = "v0.0.14"
 
 [[projects]]
   digest = "1:39b8ec80c8c4f1928c334e1bcfa4c8002943fcd600b8c2571d04166b3e92db62"
@@ -173,20 +173,20 @@
   version = "v0.0.24"
 
 [[projects]]
-  digest = "1:237f8c83d0c500a2170ba7eb31c5e459149f7202fea0ae13c71a5aff0031f5d7"
+  digest = "1:97e4ecf670d93ebb07e68e129f581e9a4a93228126a4c74fc5e24f53b0a7e54d"
   name = "github.com/nalej/grpc-inventory-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "ce838b5c50c9155724379a5a7d3dc357f8616de5"
-  version = "v0.0.39"
+  revision = "ac9ae51d4ff511c787ba1eb70fa793cb39427cd8"
+  version = "v0.0.41"
 
 [[projects]]
-  digest = "1:5e4a385f14971bc5d4e29e6b62bc14820e57ea64ec3be918946a76d9dcfa3d26"
+  digest = "1:f41783cc6d03c6734fe9bb8b42ca4aa87651430e98cd8fe0ad5c72ca30da2efa"
   name = "github.com/nalej/grpc-network-go"
   packages = ["."]
   pruneopts = ""
-  revision = "4349f815a52098c33a2b11f567008979f942c1d6"
-  version = "v0.0.41"
+  revision = "41e32d47652ad671340be2a115d36ec4364070e4"
+  version = "v0.0.42"
 
 [[projects]]
   digest = "1:0e5100c2c9fcced5b1c0f2306742cbd44dd401cfc52a4b90678c02277fb44ac2"
@@ -222,7 +222,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:0265320dcf001c5a5ae761665d125dc420b9021b89cc53099ffb2c35b6a3e91e"
+  digest = "1:b978fd74c90bc66988f9aae5e367f51098bc85910c50eb55e72a4bf9c2943aea"
   name = "github.com/nalej/nalej-bus"
   packages = [
     "pkg/bus",
@@ -232,7 +232,7 @@
     "pkg/queue/inventory/ops",
   ]
   pruneopts = ""
-  revision = "e5e1f972c76d3c855264df1f8591a0dac977327e"
+  revision = "5dc5defac13c45512c5be305ed6152da68f8f042"
 
 [[projects]]
   digest = "1:a3735b0978a8b53fc2ac97a6f46ca1189f0712a00df86d6ec4cf26c1a25e6d77"
