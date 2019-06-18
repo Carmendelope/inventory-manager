@@ -6,13 +6,17 @@ package inventory
 
 import (
 	"context"
+	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/inventory-manager/internal/pkg/config"
 	"github.com/nalej/inventory-manager/internal/pkg/entities"
+	"github.com/rs/zerolog/log"
+	"strings"
 	"time"
 )
 
@@ -196,4 +200,49 @@ func (m *Manager) toController(ec *grpc_inventory_go.EdgeController) *grpc_inven
 		Status:             status,
 		Location:           ec.Location,
 	}
+}
+
+// decomposeDeviceAssetID convert a grpc_inventory_manager_go.DeviceId into a grpc_device_go.DeviceId
+// asset_device_id is cmmpose by device_group_id#device_id
+func (m *Manager) decomposeDeviceAssetID (deviceID *grpc_inventory_manager_go.DeviceId) (*grpc_device_go.DeviceId, derrors.Error) {
+
+	if deviceID == nil {
+		return nil, derrors.NewInvalidArgumentError("deviceId cannot be empty")
+	}
+	deviceAssetId := deviceID.AssetDeviceId
+	if deviceAssetId == "" {
+		return nil, derrors.NewInvalidArgumentError("device_asset_id cannot be empty")
+	}
+
+	fields := strings.Split(deviceAssetId, "#")
+	if len(fields) != 2  {
+		return nil, derrors.NewInvalidArgumentError("device_asset_id is wrong")
+
+	}
+	return &grpc_device_go.DeviceId{
+		OrganizationId:	deviceID.OrganizationId,
+		DeviceGroupId:	fields[0],
+		DeviceId: 		fields[1],
+	}, nil
+
+}
+
+func (m *Manager)GetDeviceInfo( request *grpc_inventory_manager_go.DeviceId) (*grpc_inventory_manager_go.Device, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	defer cancel()
+
+	deviceID, decErr  := m.decomposeDeviceAssetID(request)
+	if decErr != nil {
+		return nil, conversions.ToGRPCError(decErr)
+	}
+
+	log.Debug().Interface("device", deviceID).Msg("Get device info")
+
+	device, err := m.deviceManagerClient.GetDevice(ctx, deviceID)
+	if err != nil {
+		log.Debug().Str("error", conversions.ToDerror(err).DebugReport()).Msg("error")
+		return nil, err
+	}
+	log.Debug().Interface("device", device).Msg("device")
+	return entities.NewDeviceFromGRPC(device), nil
 }

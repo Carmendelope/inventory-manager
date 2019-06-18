@@ -63,6 +63,17 @@ func (h *Handler) GetAssetInfo(_ context.Context, assetID *grpc_inventory_go.Ass
 	return asset, nil
 }
 
+// GetAssetInfo returns the information of a given device
+func (h *Handler)GetDeviceInfo(ctx context.Context, deviceID *grpc_inventory_manager_go.DeviceId) (*grpc_inventory_manager_go.Device, error) {
+
+	vErr := entities.ValidDeviceId(deviceID)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+	return h.manager.GetDeviceInfo(deviceID)
+
+}
+
 func (h *Handler) Summary(_ context.Context, orgID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
 	verr := entities.ValidOrganizationID(orgID)
 	if verr != nil {
