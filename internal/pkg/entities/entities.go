@@ -236,3 +236,16 @@ func ValidUpdateAssetRequest (request *grpc_inventory_go.UpdateAssetRequest) der
 	}
 	return nil
 }
+
+func ValidUpdateDeviceLocationRequest (request *grpc_inventory_manager_go.UpdateDeviceLocationRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
+	}
+	if request.AssetDeviceId == "" {
+		return derrors.NewInvalidArgumentError("asset_device_id cannot be empty")
+	}
+	if request.Location != nil && request.Location.Geolocation == "" {
+		return derrors.NewInvalidArgumentError("location cannot be empty")
+	}
+	return nil
+}

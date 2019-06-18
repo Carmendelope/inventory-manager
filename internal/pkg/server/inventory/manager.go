@@ -15,6 +15,7 @@ import (
 	"github.com/nalej/inventory-manager/internal/pkg/entities"
 	"github.com/nalej/inventory-manager/internal/pkg/server/contexts"
 	"github.com/rs/zerolog/log"
+	"strings"
 	"time"
 )
 
@@ -240,23 +241,20 @@ func (m * Manager) UpdateAssetLocation (updateAssetRequest *grpc_inventory_go.Up
 	return updated, nil
 }
 
-func (m * Manager) UpdateDeviceLocation (updateDeviceRequest *grpc_device_manager_go.UpdateDeviceRequest) (*grpc_device_manager_go.Device, error) {
+func (m * Manager) UpdateDeviceLocation (updateDeviceRequest *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_inventory_manager_go.Device, error) {
 	log.Debug().Msg("Update device location")
 
-	ctx, cancel := contexts.SMContext()
-	defer cancel()
+	deviceInfo := strings.Split(updateDeviceRequest.AssetDeviceId,"#")
+	deviceGroupId := deviceInfo[0]
+	deviceId := deviceInfo[1]
 
-	updated , err := m.deviceManagerClient.UpdateDevice(ctx, &grpc_device_manager_go.UpdateDeviceRequest{
-		OrganizationId: updateDeviceRequest.OrganizationId,
-		DeviceGroupId: updateDeviceRequest.DeviceGroupId,
-		DeviceId: updateDeviceRequest.DeviceId,
-		Enabled: updateDeviceRequest.Enabled,
+	device := &grpc_inventory_manager_go.Device{
+		DeviceGroupId: deviceGroupId,
+		DeviceId: deviceId,
+		AssetDeviceId: updateDeviceRequest.AssetDeviceId,
 		Location: updateDeviceRequest.Location,
-	},
-	)
-	if err != nil {
-		return nil, err
+		OrganizationId: updateDeviceRequest.OrganizationId,
 	}
 
-	return updated, nil
+	return device, nil
 }

@@ -5,7 +5,6 @@
 package inventory
 
 import (
-	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
@@ -75,15 +74,25 @@ func (h *Handler) Summary(_ context.Context, orgID *grpc_organization_go.Organiz
 // UpdateAsset updates an asset in the inventory.
 func (h *Handler) UpdateAsset(ctx context.Context, in *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error){
 	log.Info().Msg("Update asset")
-	vErr := entities.ValidUpdateAssetRequest(updateAssetRequest)
+	vErr := entities.ValidUpdateAssetRequest(in)
 	if vErr != nil {
 		return nil, conversions.ToGRPCError(vErr)
 	}
 
-	return h.manager.UpdateAssetLocation(updateAssetRequest)
+	return h.manager.UpdateAssetLocation(in)
 }
 
 // UpdateDevice updates a device in the inventory.
-func (h *Handler) UpdateDevice(ctx context.Context, in *grpc_device_go.UpdateDeviceRequest) (*grpc_device_go.Device, error){
+func (h *Handler) UpdateDevice(ctx context.Context, in *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_inventory_manager_go.Device, error){
+	log.Info().Msg("Update device")
+	vErr := entities.ValidUpdateDeviceLocationRequest(in)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+
+	return nil, nil
+}
+
+func (h *Handler) GetDeviceInfo (ctx context.Context, request *grpc_inventory_manager_go.DeviceId) (*grpc_inventory_manager_go.Device, error) {
 	return nil, nil
 }
