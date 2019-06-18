@@ -233,3 +233,13 @@ func ValidAssetUninstalledId (request  *grpc_inventory_go.AssetUninstalledId) de
 	}
 	return nil
 }
+
+func ValidDeviceId (request *grpc_inventory_manager_go.DeviceId) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
+	}
+	if request.AssetDeviceId == "" {
+		return derrors.NewInvalidArgumentError("asset_device-id cannot be empty")
+	}
+	return nil
+}
