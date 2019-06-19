@@ -250,6 +250,8 @@ func (m * Manager) UpdateDeviceLocation (updateDeviceRequest *grpc_inventory_man
 	deviceInfo := strings.Split(updateDeviceRequest.AssetDeviceId,"#")
 	deviceGroupId := deviceInfo[0]
 	deviceId := deviceInfo[1]
+	log.Debug().Str("deviceGroupId", deviceGroupId).Msg("device group ID")
+	log.Debug().Str("deviceId", deviceId).Msg("device ID")
 
 	deviceDM, err := m.deviceManagerClient.UpdateDeviceLocation(ctx, &grpc_device_manager_go.UpdateDeviceLocationRequest{
 		DeviceId:deviceId,

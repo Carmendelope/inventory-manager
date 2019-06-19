@@ -90,7 +90,7 @@ func (h *Handler) UpdateDevice(ctx context.Context, in *grpc_inventory_manager_g
 		return nil, conversions.ToGRPCError(vErr)
 	}
 
-	return nil, nil
+	return h.manager.UpdateDeviceLocation(in)
 }
 
 func (h *Handler) GetDeviceInfo (ctx context.Context, request *grpc_inventory_manager_go.DeviceId) (*grpc_inventory_manager_go.Device, error) {
