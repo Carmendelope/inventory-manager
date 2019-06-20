@@ -205,8 +205,6 @@ func (m *Manager) toController(ec *grpc_inventory_go.EdgeController) *grpc_inven
 }
 
 func (m * Manager) UpdateAssetLocation (updateAssetRequest *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error) {
-	log.Debug().Msg("Update asset location")
-
 	ctx, cancel := contexts.SMContext()
 	defer cancel()
 
@@ -229,8 +227,6 @@ func (m * Manager) UpdateAssetLocation (updateAssetRequest *grpc_inventory_go.Up
 }
 
 func (m * Manager) UpdateDeviceLocation (updateDeviceRequest *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_inventory_manager_go.Device, error) {
-	log.Debug().Msg("Update device location")
-
 	ctx, cancel := contexts.SMContext()
 	defer cancel()
 
