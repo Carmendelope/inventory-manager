@@ -10,7 +10,6 @@ import (
 	"github.com/nalej/grpc-organization-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/inventory-manager/internal/pkg/entities"
-	"github.com/rs/zerolog/log"
 	"golang.org/x/net/context"
 )
 
@@ -63,6 +62,17 @@ func (h *Handler) GetAssetInfo(_ context.Context, assetID *grpc_inventory_go.Ass
 	return asset, nil
 }
 
+// GetAssetInfo returns the information of a given device
+func (h *Handler)GetDeviceInfo(ctx context.Context, deviceID *grpc_inventory_manager_go.DeviceId) (*grpc_inventory_manager_go.Device, error) {
+
+	vErr := entities.ValidDeviceId(deviceID)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+	return h.manager.GetDeviceInfo(deviceID)
+
+}
+
 func (h *Handler) Summary(_ context.Context, orgID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
 	verr := entities.ValidOrganizationID(orgID)
 	if verr != nil {
@@ -73,7 +83,6 @@ func (h *Handler) Summary(_ context.Context, orgID *grpc_organization_go.Organiz
 
 // UpdateAsset updates an asset in the inventory.
 func (h *Handler) UpdateAsset(ctx context.Context, in *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error){
-	log.Info().Msg("Update asset")
 	vErr := entities.ValidUpdateAssetRequest(in)
 	if vErr != nil {
 		return nil, conversions.ToGRPCError(vErr)
@@ -84,15 +93,10 @@ func (h *Handler) UpdateAsset(ctx context.Context, in *grpc_inventory_go.UpdateA
 
 // UpdateDevice updates a device in the inventory.
 func (h *Handler) UpdateDevice(ctx context.Context, in *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_inventory_manager_go.Device, error){
-	log.Info().Msg("Update device")
 	vErr := entities.ValidUpdateDeviceLocationRequest(in)
 	if vErr != nil {
 		return nil, conversions.ToGRPCError(vErr)
 	}
 
 	return h.manager.UpdateDeviceLocation(in)
-}
-
-func (h *Handler) GetDeviceInfo (ctx context.Context, request *grpc_inventory_manager_go.DeviceId) (*grpc_inventory_manager_go.Device, error) {
-	return nil, nil
 }

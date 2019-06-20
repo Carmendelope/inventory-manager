@@ -6,11 +6,13 @@ package inventory
 
 import (
 	"context"
+	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-device-go"
 	"github.com/nalej/grpc-device-manager-go"
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-organization-go"
+	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/inventory-manager/internal/pkg/config"
 	"github.com/nalej/inventory-manager/internal/pkg/entities"
 	"github.com/nalej/inventory-manager/internal/pkg/server/contexts"
@@ -45,21 +47,6 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	if err != nil {
 		return nil, err
 	}
-
-	devicesIM := make([]*grpc_inventory_manager_go.Device, 0)
-	for _, device := range devices {
-		deviceIM := &grpc_inventory_manager_go.Device{
-			OrganizationId: device.OrganizationId,
-			Location: device.Location,
-			Labels: device.Labels,
-			RegisterSince: device.RegisterSince,
-			DeviceId: device.DeviceId,
-			DeviceGroupId: device.DeviceGroupId,
-			AssetDeviceId: device.AssetDeviceId,
-		}
-		devicesIM = append(devicesIM, deviceIM)
-	}
-
 	assets, err := m.listAssets(organizationID)
 	if err != nil {
 		return nil, err
@@ -71,7 +58,7 @@ func (m *Manager) List(organizationID *grpc_organization_go.OrganizationId) (*gr
 	}
 
 	return &grpc_inventory_manager_go.InventoryList{
-		Devices:     devicesIM,
+		Devices: devices,
 		Assets:      assets,
 		Controllers: controllers,
 	}, nil
@@ -248,28 +235,71 @@ func (m * Manager) UpdateDeviceLocation (updateDeviceRequest *grpc_inventory_man
 	defer cancel()
 
 	deviceInfo := strings.Split(updateDeviceRequest.AssetDeviceId,"#")
+	if len(deviceInfo) != 2{
+		return nil, derrors.NewInvalidArgumentError("invalid asset_device_id")
+	}
 	deviceGroupId := deviceInfo[0]
 	deviceId := deviceInfo[1]
-	log.Debug().Str("deviceGroupId", deviceGroupId).Msg("device group ID")
-	log.Debug().Str("deviceId", deviceId).Msg("device ID")
 
-	deviceDM, err := m.deviceManagerClient.UpdateDeviceLocation(ctx, &grpc_device_manager_go.UpdateDeviceLocationRequest{
-		DeviceId:deviceId,
-		Location:updateDeviceRequest.Location,
-		OrganizationId:updateDeviceRequest.OrganizationId,
-		DeviceGroupId:deviceGroupId,
-		UpdateLocation:updateDeviceRequest.UpdateLocation,
-	})
+	updateRequest := &grpc_device_manager_go.UpdateDeviceLocationRequest{
+		OrganizationId:       updateDeviceRequest.OrganizationId,
+		DeviceGroupId:        deviceGroupId,
+		DeviceId:             deviceId,
+		UpdateLocation:       true,
+		Location:             updateDeviceRequest.Location,
+	}
+
+	updated, err := m.deviceManagerClient.UpdateDeviceLocation(ctx, updateRequest)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &grpc_inventory_manager_go.Device{
-		OrganizationId:deviceDM.OrganizationId,
-		Location:deviceDM.Location,
-		DeviceGroupId:deviceDM.DeviceGroupId,
-		DeviceId:deviceDM.DeviceId,
-		AssetDeviceId:updateDeviceRequest.AssetDeviceId,
-	}, nil
+	return entities.NewDeviceFromGRPC(updated), nil
 }
+
+// decomposeDeviceAssetID convert a grpc_inventory_manager_go.DeviceId into a grpc_device_go.DeviceId
+// asset_device_id is cmmpose by device_group_id#device_id
+func (m *Manager) decomposeDeviceAssetID (deviceID *grpc_inventory_manager_go.DeviceId) (*grpc_device_go.DeviceId, derrors.Error) {
+
+	if deviceID == nil {
+		return nil, derrors.NewInvalidArgumentError("deviceId cannot be empty")
+	}
+	deviceAssetId := deviceID.AssetDeviceId
+	if deviceAssetId == "" {
+		return nil, derrors.NewInvalidArgumentError("device_asset_id cannot be empty")
+	}
+
+	fields := strings.Split(deviceAssetId, "#")
+	if len(fields) != 2  {
+		return nil, derrors.NewInvalidArgumentError("device_asset_id is wrong")
+
+	}
+	return &grpc_device_go.DeviceId{
+		OrganizationId:	deviceID.OrganizationId,
+		DeviceGroupId:	fields[0],
+		DeviceId: 		fields[1],
+	}, nil
+
+}
+
+func (m *Manager)GetDeviceInfo( request *grpc_inventory_manager_go.DeviceId) (*grpc_inventory_manager_go.Device, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	defer cancel()
+
+	deviceID, decErr  := m.decomposeDeviceAssetID(request)
+	if decErr != nil {
+		return nil, conversions.ToGRPCError(decErr)
+	}
+
+	log.Debug().Interface("device", deviceID).Msg("Get device info")
+
+	device, err := m.deviceManagerClient.GetDevice(ctx, deviceID)
+	if err != nil {
+		log.Debug().Str("error", conversions.ToDerror(err).DebugReport()).Msg("error")
+		return nil, err
+	}
+	log.Debug().Interface("device", device).Msg("device")
+	return entities.NewDeviceFromGRPC(device), nil
+}
+

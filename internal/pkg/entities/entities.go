@@ -161,16 +161,17 @@ func ValidAgentOpResponse (request *grpc_inventory_manager_go.AgentOpResponse) d
 
 func NewDeviceFromGRPC (device *grpc_device_manager_go.Device) *grpc_inventory_manager_go.Device {
 	return &grpc_inventory_manager_go.Device{
-		OrganizationId: device.OrganizationId,
-		DeviceId: device.DeviceId,
-		DeviceGroupId: device.DeviceGroupId,
-		AssetDeviceId: fmt.Sprintf("%s#%s", device.DeviceGroupId, device.DeviceId),
-		RegisterSince: device.RegisterSince,
-		Labels: device.Labels,
-		Location: device.Location,
-		DeviceApiKey: device.DeviceApiKey,
-		DeviceStatus: device.DeviceStatus,
-		Enabled: device.Enabled,
+		OrganizationId:       device.OrganizationId,
+		DeviceGroupId:        device.DeviceGroupId,
+		DeviceId:             device.DeviceId,
+		AssetDeviceId:        fmt.Sprintf("%s#%s", device.DeviceGroupId, device.DeviceId),
+		RegisterSince:        device.RegisterSince,
+		Labels:               device.Labels,
+		Enabled:              device.Enabled,
+		DeviceApiKey:         device.DeviceApiKey,
+		DeviceStatus:         device.DeviceStatus,
+		Location:             device.Location,
+		AssetInfo:            device.AssetInfo,
 	}
 }
 
@@ -233,6 +234,16 @@ func ValidUpdateAssetRequest (request *grpc_inventory_go.UpdateAssetRequest) der
 	}
 	if request.AssetId == "" {
 		return derrors.NewInvalidArgumentError("asset_id cannot be empty")
+	}
+	return nil
+}
+
+func ValidDeviceId (request *grpc_inventory_manager_go.DeviceId) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
+	}
+	if request.AssetDeviceId == "" {
+		return derrors.NewInvalidArgumentError("asset_device_id cannot be empty")
 	}
 	return nil
 }
