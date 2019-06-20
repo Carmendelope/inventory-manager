@@ -15,6 +15,7 @@ import (
 	"github.com/nalej/grpc-utils/pkg/conversions"
 	"github.com/nalej/inventory-manager/internal/pkg/config"
 	"github.com/nalej/inventory-manager/internal/pkg/entities"
+	"github.com/nalej/inventory-manager/internal/pkg/server/contexts"
 	"github.com/rs/zerolog/log"
 	"strings"
 	"time"
@@ -178,6 +179,7 @@ func (m *Manager) toAsset(asset *grpc_inventory_go.Asset) *grpc_inventory_manage
 		LastOpSummary:      asset.LastOpResult,
 		LastAliveTimestamp: asset.LastAliveTimestamp,
 		Status:             status,
+		Location:           asset.Location,
 	}
 }
 
@@ -200,6 +202,56 @@ func (m *Manager) toController(ec *grpc_inventory_go.EdgeController) *grpc_inven
 		Status:             status,
 		Location:           ec.Location,
 	}
+}
+
+func (m * Manager) UpdateAssetLocation (updateAssetRequest *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error) {
+	ctx, cancel := contexts.SMContext()
+	defer cancel()
+
+	updated , err := m.assetsClient.Update(ctx, &grpc_inventory_go.UpdateAssetRequest{
+		OrganizationId: updateAssetRequest.OrganizationId,
+		AssetId: updateAssetRequest.AssetId,
+		AddLabels: false,
+		RemoveLabels: false,
+		UpdateLastAlive: false,
+		UpdateIp: false,
+		UpdateLocation: true,
+		Location: updateAssetRequest.Location,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return updated, nil
+}
+
+func (m * Manager) UpdateDeviceLocation (updateDeviceRequest *grpc_inventory_manager_go.UpdateDeviceLocationRequest) (*grpc_inventory_manager_go.Device, error) {
+	ctx, cancel := contexts.SMContext()
+	defer cancel()
+
+	deviceInfo := strings.Split(updateDeviceRequest.AssetDeviceId,"#")
+	if len(deviceInfo) != 2{
+		return nil, derrors.NewInvalidArgumentError("invalid asset_device_id")
+	}
+	deviceGroupId := deviceInfo[0]
+	deviceId := deviceInfo[1]
+
+	updateRequest := &grpc_device_manager_go.UpdateDeviceLocationRequest{
+		OrganizationId:       updateDeviceRequest.OrganizationId,
+		DeviceGroupId:        deviceGroupId,
+		DeviceId:             deviceId,
+		UpdateLocation:       true,
+		Location:             updateDeviceRequest.Location,
+	}
+
+	updated, err := m.deviceManagerClient.UpdateDeviceLocation(ctx, updateRequest)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return entities.NewDeviceFromGRPC(updated), nil
 }
 
 // decomposeDeviceAssetID convert a grpc_inventory_manager_go.DeviceId into a grpc_device_go.DeviceId
@@ -246,3 +298,4 @@ func (m *Manager)GetDeviceInfo( request *grpc_inventory_manager_go.DeviceId) (*g
 	log.Debug().Interface("device", device).Msg("device")
 	return entities.NewDeviceFromGRPC(device), nil
 }
+

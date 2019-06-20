@@ -161,17 +161,17 @@ func ValidAgentOpResponse (request *grpc_inventory_manager_go.AgentOpResponse) d
 
 func NewDeviceFromGRPC (device *grpc_device_manager_go.Device) *grpc_inventory_manager_go.Device {
 	return &grpc_inventory_manager_go.Device{
-		OrganizationId: device.OrganizationId,
-		DeviceId: device.DeviceId,
-		DeviceGroupId: device.DeviceGroupId,
-		AssetDeviceId: fmt.Sprintf("%s#%s", device.DeviceGroupId, device.DeviceId),
-		RegisterSince: device.RegisterSince,
-		Labels: device.Labels,
-		Location: device.Location,
-		DeviceApiKey: device.DeviceApiKey,
-		DeviceStatus: device.DeviceStatus,
-		Enabled: device.Enabled,
-		AssetInfo: device.AssetInfo,
+		OrganizationId:       device.OrganizationId,
+		DeviceGroupId:        device.DeviceGroupId,
+		DeviceId:             device.DeviceId,
+		AssetDeviceId:        fmt.Sprintf("%s#%s", device.DeviceGroupId, device.DeviceId),
+		RegisterSince:        device.RegisterSince,
+		Labels:               device.Labels,
+		Enabled:              device.Enabled,
+		DeviceApiKey:         device.DeviceApiKey,
+		DeviceStatus:         device.DeviceStatus,
+		Location:             device.Location,
+		AssetInfo:            device.AssetInfo,
 	}
 }
 
@@ -225,6 +225,10 @@ func ValidQueryMetricsRequest(request *grpc_inventory_manager_go.QueryMetricsReq
 }
 
 func ValidAssetUninstalledId (request  *grpc_inventory_go.AssetUninstalledId) derrors.Error {
+	return nil
+}
+
+func ValidUpdateAssetRequest (request *grpc_inventory_go.UpdateAssetRequest) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
 	}
@@ -239,7 +243,20 @@ func ValidDeviceId (request *grpc_inventory_manager_go.DeviceId) derrors.Error {
 		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
 	}
 	if request.AssetDeviceId == "" {
-		return derrors.NewInvalidArgumentError("asset_device-id cannot be empty")
+		return derrors.NewInvalidArgumentError("asset_device_id cannot be empty")
+	}
+	return nil
+}
+
+func ValidUpdateDeviceLocationRequest (request *grpc_inventory_manager_go.UpdateDeviceLocationRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
+	}
+	if request.AssetDeviceId == "" {
+		return derrors.NewInvalidArgumentError("asset_device_id cannot be empty")
+	}
+	if request.Location != nil && request.Location.Geolocation == "" {
+		return derrors.NewInvalidArgumentError("location cannot be empty")
 	}
 	return nil
 }
