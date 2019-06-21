@@ -25,8 +25,13 @@ func NewHandler(manager Manager) *Handler {
 	}
 }
 
-func (h *Handler) InstallAgent(context.Context, *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.InstallAgentResponse, error) {
-	panic("implement me")
+func (h *Handler) InstallAgent(_ context.Context, request *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.InstallAgentResponse, error) {
+	vErr := entities.ValidInstallAgentRequest(request)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
+	}
+	log.Debug().Str("organizationID", request.OrganizationId).Str("edgeControllerId", request.EdgeControllerId).Str("target", request.TargetHost).Msg("Installing an agent")
+	return h.manager.InstallAgent(request)
 }
 
 func (h *Handler) CreateAgentJoinToken(_ context.Context, edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_inventory_manager_go.AgentJoinToken, error) {

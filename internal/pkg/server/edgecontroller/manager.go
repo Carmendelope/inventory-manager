@@ -234,6 +234,31 @@ func (m *Manager) EICAlive(eic *grpc_inventory_go.EdgeControllerId) error {
 
 }
 
+func (m * Manager) CallbackECOperation(response *grpc_inventory_manager_go.EdgeControllerOpResponse) (*grpc_common_go.Success, error) {
+	ctx, cancel := contexts.SMContext()
+	defer cancel()
+	opSummary := &grpc_inventory_go.ECOpSummary{
+		OperationId:          response.OperationId,
+		Timestamp:            response.Timestamp,
+		Status:               response.Status,
+		Info:                 response.Info,
+	}
+
+	_, err := m.controllersClient.Update(ctx, &grpc_inventory_go.UpdateEdgeControllerRequest{
+		OrganizationId:       response.OrganizationId,
+		EdgeControllerId:     response.EdgeControllerId,
+		UpdateLastOpSummary:  true,
+		LastOpSummary:        opSummary,
+	})
+
+	if err != nil {
+		log.Error().Err(err).Interface("response", response).Msg("cannot store last op summary")
+		return nil, err
+	}
+
+	return &grpc_common_go.Success{}, nil
+}
+
 
 func (m *Manager) UpdateECGeolocation(updateRequest *grpc_inventory_manager_go.UpdateGeolocationRequest) (*grpc_inventory_go.EdgeController, error){
 

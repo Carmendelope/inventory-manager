@@ -14,14 +14,6 @@ import (
 )
 
 
-
-var AgentOpResponseFromGRPC = map[grpc_inventory_manager_go.AgentOpStatus]grpc_inventory_go.AgentOpStatus{
-	grpc_inventory_manager_go.AgentOpStatus_SCHEDULED:grpc_inventory_go.AgentOpStatus_SCHEDULED,
-	grpc_inventory_manager_go.AgentOpStatus_SUCCESS:grpc_inventory_go.AgentOpStatus_SUCCESS,
-	grpc_inventory_manager_go.AgentOpStatus_FAIL:grpc_inventory_go.AgentOpStatus_FAIL,
-
-}
-
 func ValidEICJoinToken(request *grpc_inventory_manager_go.EICJoinToken) derrors.Error {
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError("organization_id must not be empty")
@@ -53,6 +45,19 @@ func GetEdgeControllerName(organizationID string, edgeControllerID string) strin
 	return fmt.Sprintf("%s-%s.eic", organizationID, edgeControllerID)
 }
 
+func ValidEdgeControllerOpResponse(response * grpc_inventory_manager_go.EdgeControllerOpResponse) derrors.Error{
+	if response.OrganizationId == ""{
+		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
+	}
+	if response.EdgeControllerId == ""{
+		return derrors.NewInvalidArgumentError("edge_controller_id cannot be empty")
+	}
+	if response.OperationId == ""{
+		return derrors.NewInvalidArgumentError("operation_id cannot be empty")
+	}
+	return nil
+}
+
 func ValidEdgeControllerId(edgeControllerID *grpc_inventory_go.EdgeControllerId) derrors.Error {
 	if edgeControllerID.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError("organization_id must not be empty")
@@ -73,6 +78,19 @@ func ValidEICStartInfo(info *grpc_inventory_manager_go.EICStartInfo) derrors.Err
 	// TODO Validate IP regex
 	if info.Ip == "" {
 		return derrors.NewInvalidArgumentError("ip must not be empty")
+	}
+	return nil
+}
+
+func ValidInstallAgentRequest(request *grpc_inventory_manager_go.InstallAgentRequest) derrors.Error{
+	if request.OrganizationId == ""{
+		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
+	}
+	if request.EdgeControllerId == ""{
+		return derrors.NewInvalidArgumentError("edge_controller_id cannot be empty")
+	}
+	if request.TargetHost == ""{
+		return derrors.NewInvalidArgumentError("target_host cannot be empty")
 	}
 	return nil
 }

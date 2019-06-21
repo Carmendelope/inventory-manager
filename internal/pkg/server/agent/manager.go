@@ -12,7 +12,6 @@ import (
 	"github.com/nalej/grpc-inventory-go"
 	"github.com/nalej/grpc-inventory-manager-go"
 	"github.com/nalej/grpc-utils/pkg/conversions"
-	"github.com/nalej/inventory-manager/internal/pkg/entities"
 	"github.com/nalej/inventory-manager/internal/pkg/server/contexts"
 	"github.com/rs/zerolog/log"
 	"github.com/satori/go.uuid"
@@ -40,7 +39,13 @@ func (m *Manager) generateToken() string {
 }
 
 func (m *Manager) InstallAgent(request *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.InstallAgentResponse, error) {
-	panic("implement me")
+	ctx, cancel := context.WithTimeout(context.Background(), ProxyTimeout)
+	defer cancel()
+	response, err := m.proxyClient.InstallAgent(ctx, request)
+	if err != nil{
+		return nil, err
+	}
+	return response, nil
 }
 
 func (m *Manager) CreateAgentJoinToken(edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_inventory_manager_go.AgentJoinToken, error) {
@@ -154,7 +159,7 @@ func (m *Manager) CallbackAgentOperation(response *grpc_inventory_manager_go.Age
 	opSummary := &grpc_inventory_go.AgentOpSummary{
 		OperationId: response.OperationId,
 		Timestamp: response.Timestamp,
-		Status: entities.AgentOpResponseFromGRPC[response.Status],
+		Status: response.Status,
 		Info: response.Info,
 	}
 
@@ -169,7 +174,8 @@ func (m *Manager) CallbackAgentOperation(response *grpc_inventory_manager_go.Age
 		UpdateIp:            false,
 	})
 	if err != nil {
-		log.Warn().Str("organizationID", response.OrganizationId).Str("assetID", response.AssetId).Msg("enable to send alive message to sytem-model to store the op summary")
+		log.Error().Err(err).Interface("response", response).Msg("cannot store last op summary")
+		return nil, err
 	}
 
 	return &grpc_common_go.Success{}, nil
