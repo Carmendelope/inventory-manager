@@ -74,6 +74,7 @@ func (s *Service) GetBusClients() (*BusClients, derrors.Error) {
 	// inventory Ops Consumer
 	invOpOpts := ops.NewConfigInventoryOpsConsumer(1, ops.ConsumableStructsInventoryOpsConsumer{
 		AgentOpResponse: true,
+		EdgeControllerOpResponse: true,
 	})
 
 	invOpConsumer, err := ops.NewInventoryOpsConsumer(queueClient, "invmng-invops", true, invOpOpts)
@@ -181,7 +182,7 @@ func (s *Service) Run() error {
 	inventoryEventsConsumer := bus.NewInventoryEventsHandler(ecHandler, agentHandler, busClients.inventoryEventsConsumer)
 	inventoryEventsConsumer.Run()
 
-	inventoryOpsConsumer := bus.NewInventoryOpsHandler(agentHandler, busClients.inventoryOpsConsumer)
+	inventoryOpsConsumer := bus.NewInventoryOpsHandler(agentHandler, ecHandler, busClients.inventoryOpsConsumer)
 	inventoryOpsConsumer.Run()
 
 

@@ -3,6 +3,7 @@ package bus
 import (
 	"context"
 	"github.com/nalej/inventory-manager/internal/pkg/server/agent"
+	"github.com/nalej/inventory-manager/internal/pkg/server/edgecontroller"
 	"github.com/nalej/nalej-bus/pkg/queue/inventory/ops"
 	"github.com/rs/zerolog/log"
 	"time"
@@ -13,18 +14,21 @@ const InventoryOpsTimeout = time.Second * 30
 
 type InventoryOpsHandler struct {
 	agentHandler *agent.Handler
+	edgeControllerHandler * edgecontroller.Handler
 	consumer     *ops.InventoryOpsConsumer
 }
 
-func NewInventoryOpsHandler(agentHandler *agent.Handler, consumer *ops.InventoryOpsConsumer) *InventoryOpsHandler {
+func NewInventoryOpsHandler(agentHandler *agent.Handler, edgeControllerHandler * edgecontroller.Handler, consumer *ops.InventoryOpsConsumer) *InventoryOpsHandler {
 	return &InventoryOpsHandler{
 		agentHandler: agentHandler,
+		edgeControllerHandler:edgeControllerHandler,
 		consumer:     consumer,
 	}
 }
 
 func (ioh *InventoryOpsHandler) Run() {
 	go ioh.consumeAgentOpResponse()
+	go ioh.consumeECOpResponse()
 	go ioh.waitRequests()
 }
 
@@ -59,3 +63,11 @@ func (ioh *InventoryOpsHandler) consumeAgentOpResponse() {
 	}
 }
 
+func (ioh *InventoryOpsHandler) consumeECOpResponse() {
+	log.Debug().Msg("AgentOpResponse")
+	for {
+		received := <- ioh.consumer.Config.ChEdgeControllerOpResponse
+		log.Debug().Msg("edgeControllerOpResponse received")
+		ioh.edgeControllerHandler.CallbackECOperation(nil, received)
+	}
+}

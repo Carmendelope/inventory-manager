@@ -101,12 +101,12 @@
   version = "v0.0.50"
 
 [[projects]]
-  digest = "1:b1060b790f503c6e9e25bccea8ed6707c95a533cf1aabd33bf3ec72c1926ba1c"
+  digest = "1:01ec95aad9b4beb93612dea1952f5737d716e6e60003d63cf30c9522e1a7eaff"
   name = "github.com/nalej/grpc-bus-go"
   packages = ["."]
   pruneopts = ""
-  revision = "bfcf8b396e5631fc7feb0e33c98687559766ec88"
-  version = "v0.0.14"
+  revision = "55719ca647592e083c8bd3bf6f36de5a60371777"
+  version = "v0.0.15"
 
 [[projects]]
   digest = "1:44f7426538411ea9f774f96e3b102decc9f549b188e55e29ecc15be69542a96b"
@@ -149,12 +149,12 @@
   version = "v0.0.14"
 
 [[projects]]
-  digest = "1:39b8ec80c8c4f1928c334e1bcfa4c8002943fcd600b8c2571d04166b3e92db62"
+  digest = "1:16eab2dbea8be45953e71fee39a9190cc74a4828bdf734e2cd3fef8570a939ac"
   name = "github.com/nalej/grpc-edge-inventory-proxy-go"
   packages = ["."]
   pruneopts = ""
-  revision = "40020eba2c30e410f97fef6d2e601b369d01edc3"
-  version = "v0.0.11"
+  revision = "f6934f5a033f138feb51a9af9cd73019804fd74a"
+  version = "v0.0.12"
 
 [[projects]]
   digest = "1:45793a945f1c3fadb8ac997ce0056a790fe626c221792f849ca71b86aa1a96f2"
@@ -165,20 +165,20 @@
   version = "v0.0.37"
 
 [[projects]]
-  digest = "1:e52a6409dee0debe0f68f7a1c77036d4120115ea1d1491ba93ebf109aa8bb50a"
+  digest = "1:93e6da6d334ad56d2a262a0016292cbc896592d7260c57098d13fea1c586a7b5"
   name = "github.com/nalej/grpc-inventory-go"
   packages = ["."]
   pruneopts = ""
-  revision = "a1d4777aae66823379e4142489016a40559e3bd0"
-  version = "v0.0.24"
+  revision = "a0dc962bed5723b36a09c1bb28d41d4d1d50e562"
+  version = "v0.0.25"
 
 [[projects]]
-  digest = "1:6a73d2f0f74763d2d84ede2d74f222121051733e25c9142d875236fb917d5ebe"
+  digest = "1:6fed5787beade95c0a3c3a50107e0e5a0d6ceca828a2a6f8128681716b4d9708"
   name = "github.com/nalej/grpc-inventory-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "a115456e5deece61b1c9bbcc954e7c47a76ce83c"
-  version = "v0.0.43"
+  revision = "99b7bade9f08f9650d7652b624b3fcbc76621b7e"
+  version = "v0.0.44"
 
 [[projects]]
   digest = "1:f41783cc6d03c6734fe9bb8b42ca4aa87651430e98cd8fe0ad5c72ca30da2efa"
@@ -222,7 +222,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b978fd74c90bc66988f9aae5e367f51098bc85910c50eb55e72a4bf9c2943aea"
+  digest = "1:a8453ce1b01aa7596b5a1799f302a26ade3b5b690f3660b10b3de9cb9e0d413b"
   name = "github.com/nalej/nalej-bus"
   packages = [
     "pkg/bus",
@@ -232,7 +232,7 @@
     "pkg/queue/inventory/ops",
   ]
   pruneopts = ""
-  revision = "5dc5defac13c45512c5be305ed6152da68f8f042"
+  revision = "ffe7e49b90a64620a0d00f63fc740138f457098c"
 
 [[projects]]
   digest = "1:a3735b0978a8b53fc2ac97a6f46ca1189f0712a00df86d6ec4cf26c1a25e6d77"
@@ -321,7 +321,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3c5c541597f5c5bd3259032815be4813fd76e05cfebab38e63c21facc45aaf30"
+  digest = "1:5c6b8395efd72ad4250b7747e2b1a0683c3edb7b0346a938ff45240c7ec53691"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -336,15 +336,15 @@
     "trace",
   ]
   pruneopts = ""
-  revision = "b5b0513f8c1bb7c1e3e6f168fba117131fe2614a"
+  revision = "3b0461eec859c4b73bb64fdc8285971fd33e3938"
 
 [[projects]]
   branch = "master"
-  digest = "1:5544e3b2b7df73f42fbdcaa228abc3829c78affbf6e80117c1c34dc2cbe795c6"
+  digest = "1:46bbbd676304546dd1ca8baf1bc82a5e536f488d8cb97cb519f60d6d0dd9e3ab"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "6f217b454f458f9c81d48c1fff9e6f5ea6b0bbf2"
+  revision = "bf70e4678053e8a9f269f32f9b29464e4a03a1e6"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -385,7 +385,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:35b7c9c7e96aaebcd052de9c0b9787e22796a979e989408d7ce9a9a32de906d4"
+  digest = "1:c8da13f7b31f072cc7f75964fcf2d61c731a055fe9f19429c0c517e8e1880197"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -395,7 +395,7 @@
     "protobuf/field_mask",
   ]
   pruneopts = ""
-  revision = "a7e196e89fd3a3c4d103ca540bd5dac3a736e375"
+  revision = "6af8c5fc6601ab6b41cd32742a65ce2f5bd9db57"
 
 [[projects]]
   digest = "1:6881653b963cd12dc1a9824aed5e122d0ff38e53e3ee07862f969a56ad2f2e9c"
