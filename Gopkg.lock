@@ -165,20 +165,20 @@
   version = "v0.0.37"
 
 [[projects]]
-  digest = "1:93e6da6d334ad56d2a262a0016292cbc896592d7260c57098d13fea1c586a7b5"
+  digest = "1:5543dd06009643fdd15c7444da14807c29e3c678a8b5634ec8a00b047fd83fc4"
   name = "github.com/nalej/grpc-inventory-go"
   packages = ["."]
   pruneopts = ""
-  revision = "a0dc962bed5723b36a09c1bb28d41d4d1d50e562"
-  version = "v0.0.25"
+  revision = "5c1487caadbab75ee99a5e9bf617c3e76f8a4397"
+  version = "v0.0.26"
 
 [[projects]]
-  digest = "1:6fed5787beade95c0a3c3a50107e0e5a0d6ceca828a2a6f8128681716b4d9708"
+  digest = "1:093309473e6dc820f83b0efdd4c424aa4393e13d585ed0d159322c3aec818f71"
   name = "github.com/nalej/grpc-inventory-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "99b7bade9f08f9650d7652b624b3fcbc76621b7e"
-  version = "v0.0.44"
+  revision = "fbb31d96891ff0bf1d00c81113a82d48e1b10982"
+  version = "v0.0.46"
 
 [[projects]]
   digest = "1:f41783cc6d03c6734fe9bb8b42ca4aa87651430e98cd8fe0ad5c72ca30da2efa"
@@ -340,11 +340,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:46bbbd676304546dd1ca8baf1bc82a5e536f488d8cb97cb519f60d6d0dd9e3ab"
+  digest = "1:0cc6f08b513a8ae7ee7d5edfb89c528224c8f64cbd5d7587c9c758f9fab9dba2"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "bf70e4678053e8a9f269f32f9b29464e4a03a1e6"
+  revision = "c5567b49c5d04a5f83870795b8c0e2df43a8ce32"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"

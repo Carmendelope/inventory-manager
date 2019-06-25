@@ -106,3 +106,8 @@ func (h *Handler) UpdateECGeolocation(_ context.Context, in *grpc_inventory_mana
 	return h.manager.UpdateECGeolocation(in)
 
 }
+
+// UpdateEC updates an Edge Controller
+func (h *Handler) UpdateEC(ctx context.Context, in *grpc_inventory_go.UpdateEdgeControllerRequest) (*grpc_inventory_go.EdgeController, error){
+	return nil, conversions.ToGRPCError(derrors.NewUnimplementedError("not implemented yet"))
+}
