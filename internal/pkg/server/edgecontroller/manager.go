@@ -294,7 +294,7 @@ func (m *Manager) UpdateEC(updateRequest *grpc_inventory_go.UpdateEdgeController
 		UpdateLastAlive:      updateRequest.UpdateLastAlive,
 		LastAliveTimestamp:   updateRequest.LastAliveTimestamp,
 		UpdateGeolocation:    false,
-		Geolocation:          nil,
+		Geolocation:          updateRequest.Geolocation,
 		UpdateLastOpSummary:  updateRequest.UpdateLastOpSummary,
 		LastOpSummary:        updateRequest.LastOpSummary,
 	})
