@@ -204,20 +204,25 @@ func (m *Manager) toController(ec *grpc_inventory_go.EdgeController) *grpc_inven
 	}
 }
 
-func (m * Manager) UpdateAssetLocation (updateAssetRequest *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error) {
+func (m * Manager) UpdateAsset (updateAssetRequest *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error) {
 	ctx, cancel := contexts.SMContext()
 	defer cancel()
 
 	updated , err := m.assetsClient.Update(ctx, &grpc_inventory_go.UpdateAssetRequest{
-		OrganizationId: updateAssetRequest.OrganizationId,
-		AssetId: updateAssetRequest.AssetId,
-		AddLabels: false,
-		RemoveLabels: false,
-		UpdateLastAlive: false,
-		UpdateIp: false,
-		UpdateLocation: true,
-		Location: updateAssetRequest.Location,
-		},
+		OrganizationId:       updateAssetRequest.OrganizationId,
+		AssetId:              updateAssetRequest.AssetId,
+		AddLabels:            updateAssetRequest.AddLabels,
+		RemoveLabels:         updateAssetRequest.RemoveLabels,
+		Labels:               updateAssetRequest.Labels,
+		UpdateLastOpSummary:  updateAssetRequest.UpdateLastOpSummary,
+		LastOpSummary:        updateAssetRequest.LastOpSummary,
+		UpdateLastAlive:      updateAssetRequest.UpdateLastAlive,
+		LastAliveTimestamp:   updateAssetRequest.LastAliveTimestamp,
+		UpdateIp:             updateAssetRequest.UpdateIp,
+		EicNetIp:             updateAssetRequest.EicNetIp,
+		UpdateLocation:       updateAssetRequest.UpdateLocation,
+		Location:             updateAssetRequest.Location,
+	},
 	)
 	if err != nil {
 		return nil, err
