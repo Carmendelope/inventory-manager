@@ -108,7 +108,7 @@ func (h *Handler) UpdateECGeolocation(_ context.Context, in *grpc_inventory_mana
 }
 
 // UpdateEC updates an Edge Controller
-func (h *Handler) UpdateEC (ctx context.Context, request *grpc_inventory_go.UpdateEdgeControllerRequest) (*grpc_inventory_go.EdgeController, error) {
+func (h *Handler) UpdateEC(ctx context.Context, request *grpc_inventory_go.UpdateEdgeControllerRequest) (*grpc_inventory_go.EdgeController, error){
 	log.Info().Msg("UpdateEC")
 	vErr := entities.ValidUpdateECRequest(request)
 	if vErr != nil {
@@ -116,4 +116,5 @@ func (h *Handler) UpdateEC (ctx context.Context, request *grpc_inventory_go.Upda
 	}
 
 	return h.manager.UpdateEC(request)
+
 }
