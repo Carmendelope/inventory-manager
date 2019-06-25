@@ -293,7 +293,7 @@ func (m *Manager) UpdateEC(updateRequest *grpc_inventory_go.UpdateEdgeController
 		Labels:               updateRequest.Labels,
 		UpdateLastAlive:      updateRequest.UpdateLastAlive,
 		LastAliveTimestamp:   updateRequest.LastAliveTimestamp,
-		UpdateGeolocation:    false,
+		UpdateGeolocation:    updateRequest.UpdateGeolocation,
 		Geolocation:          updateRequest.Geolocation,
 		UpdateLastOpSummary:  updateRequest.UpdateLastOpSummary,
 		LastOpSummary:        updateRequest.LastOpSummary,
