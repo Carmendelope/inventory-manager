@@ -49,8 +49,9 @@ func (m *Manager) ListMetrics(selector *grpc_inventory_manager_go.AssetSelector)
 	for _, proxyRequest := range(selectors) {
 		ecId := proxyRequest.GetEdgeControllerId()
 		log.Debug().Interface("request", proxyRequest).Msg("proxy request for ListMetrics")
-		ctx, _ := contexts.ProxyContext()
+		ctx, cancel := contexts.ProxyContext() // Manual calling cancel to avoid big list of defers
 		list, err := m.proxyClient.ListMetrics(ctx, proxyRequest)
+		cancel()
 		if err != nil {
 			// We still want to query to working edge controllers
 			log.Warn().Str("edge-controller-id", ecId).Err(err).Msg("failed calling ListMetrics")
@@ -99,8 +100,9 @@ func (m *Manager) QueryMetrics(request *grpc_inventory_manager_go.QueryMetricsRe
 		}
 		ecId := selector.GetEdgeControllerId()
 		log.Debug().Interface("request", proxyRequest).Msg("proxy request for QueryMetrics")
-		ctx, _ := contexts.ProxyContext()
+		ctx, cancel := contexts.ProxyContext() // Manual calling cancel to avoid big list of defers
 		result, err := m.proxyClient.QueryMetrics(ctx, proxyRequest)
+		cancel()
 		if err != nil {
 			// We still want to query to working edge controllers
 			log.Warn().Str("edge-controller-id", ecId).Err(err).Msg("failed calling QueryMetrics")
@@ -147,19 +149,17 @@ func (m *Manager) getSelectors(selector *grpc_inventory_manager_go.AssetSelector
 		for _, id := range(assetIds) {
 			ctx, cancel := contexts.InventoryContext()
 			// Calling cancel manually to avoid stacking up a lot of defers
-
 			asset, err := m.assetsClient.Get(ctx, &grpc_inventory_go.AssetId{
 				OrganizationId: orgId,
 				AssetId: id,
 			})
+			cancel()
 			if err != nil {
-				cancel()
 				return nil, derrors.NewUnavailableError("unable to retrieve asset information", err).WithParams(id)
 			}
 			if selectedAsset(asset, selector) {
 				addAsset(selectors, asset)
 			}
-			cancel()
 		}
 	} else if len(selector.GetLabels()) == 0 && len(selector.GetGroupIds()) == 0 {
 		// Make a selector for each Edge Controller, without explicit assets
