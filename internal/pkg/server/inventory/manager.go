@@ -142,8 +142,107 @@ func (m *Manager) GetAssetInfo(assetID *grpc_inventory_go.AssetId) (*grpc_invent
 	return m.toAsset(asset), nil
 }
 
-func (m *Manager) Summary(organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
-	panic("implement me")
+// getSummaryFromAssetInfo returns totalNumCPUs, totalStorage and totalRAM
+func (m * Manager) getSummaryFromAssetInfo(assetInfo *grpc_inventory_go.AssetInfo) (int32, int64, int64){
+	var totalNumCPUs int32
+	var totalStorage int64
+	var totalRAM int64
+
+	if  assetInfo == nil{
+		return 0, 0, 0
+	}
+
+	if assetInfo.Hardware != nil {
+		for _, cpu := range assetInfo.Hardware.Cpus{
+			if cpu != nil {
+				totalNumCPUs = totalNumCPUs + cpu.NumCores
+			}
+		}
+		totalRAM = totalRAM + assetInfo.Hardware.InstalledRam
+	}
+
+	if assetInfo.Storage != nil {
+		for _, storage := range assetInfo.Storage {
+			if storage != nil {
+				totalStorage = totalStorage + storage.TotalCapacity
+			}
+		}
+	}
+
+	return totalNumCPUs, totalStorage, totalRAM
+}
+
+// getSummaryFromAsset returns totalNumCPUs, totalStorage and totalRAM
+func (m * Manager) getSummaryFromAsset(asset *grpc_inventory_manager_go.Asset) (int32, int64, int64){
+	var totalNumCPUs int32
+	var totalStorage int64
+	var totalRAM int64
+
+	if asset == nil {
+		return 0, 0, 0
+	}
+
+	if asset.Hardware != nil {
+		for _, cpu := range asset.Hardware.Cpus {
+			if cpu != nil{
+				totalNumCPUs = totalNumCPUs + cpu.NumCores
+			}
+		}
+		totalRAM = totalRAM + asset.Hardware.InstalledRam
+	}
+
+	if asset.Storage != nil {
+		for _, storage := range asset.Storage {
+			if storage != nil {
+				totalStorage = totalStorage + storage.TotalCapacity
+			}
+		}
+	}
+
+	return totalNumCPUs, totalStorage, totalRAM
+}
+
+func (m *Manager) Summary (organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
+	inventoryList, err := m.List(organizationID)
+	if err != nil {
+		return nil, err
+	}
+
+	var totalNumCPUs int32 = 0
+	var totalStorage int64 = 0
+	var totalRAM int64 = 0
+
+	for _, device := range inventoryList.Devices {
+		cpus, storage, ram := m.getSummaryFromAssetInfo(device.AssetInfo)
+		totalNumCPUs = totalNumCPUs + cpus
+		totalStorage = totalStorage + storage
+		totalRAM = totalRAM + ram
+	}
+
+	for _, asset := range inventoryList.Assets {
+		// TODO Refactor asset to include an AssetInfo
+		cpus, storage, ram := m.getSummaryFromAsset(asset)
+		totalNumCPUs = totalNumCPUs + cpus
+		totalStorage = totalStorage + storage
+		totalRAM = totalRAM + ram
+	}
+
+	for _, ec := range inventoryList.Controllers {
+		cpus, storage, ram := m.getSummaryFromAssetInfo(ec.AssetInfo)
+		totalNumCPUs = totalNumCPUs + cpus
+		totalStorage = totalStorage + storage
+		totalRAM = totalRAM + ram
+	}
+
+	totalNumCPUs64 := int64 (totalNumCPUs)
+
+	return &grpc_inventory_manager_go.InventorySummary{
+		OrganizationId:       organizationID.OrganizationId,
+		TotalNumCpu:          totalNumCPUs64,
+		// Divided by 1024 to convert MB to GB
+		TotalStorage:         totalStorage/int64(1024),
+		TotalRam:             totalRAM/int64(1024),
+	}, nil
 }
 
 func (m *Manager) toAssetFromList(assets []*grpc_inventory_go.Asset) []*grpc_inventory_manager_go.Asset {
@@ -201,23 +300,29 @@ func (m *Manager) toController(ec *grpc_inventory_go.EdgeController) *grpc_inven
 		LastAliveTimestamp: ec.LastAliveTimestamp,
 		Status:             status,
 		Location:           ec.Location,
+		AssetInfo:          ec.AssetInfo,
 	}
 }
 
-func (m * Manager) UpdateAssetLocation (updateAssetRequest *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error) {
+func (m * Manager) UpdateAsset (updateAssetRequest *grpc_inventory_go.UpdateAssetRequest) (*grpc_inventory_go.Asset, error) {
 	ctx, cancel := contexts.SMContext()
 	defer cancel()
 
 	updated , err := m.assetsClient.Update(ctx, &grpc_inventory_go.UpdateAssetRequest{
-		OrganizationId: updateAssetRequest.OrganizationId,
-		AssetId: updateAssetRequest.AssetId,
-		AddLabels: false,
-		RemoveLabels: false,
-		UpdateLastAlive: false,
-		UpdateIp: false,
-		UpdateLocation: true,
-		Location: updateAssetRequest.Location,
-		},
+		OrganizationId:       updateAssetRequest.OrganizationId,
+		AssetId:              updateAssetRequest.AssetId,
+		AddLabels:            updateAssetRequest.AddLabels,
+		RemoveLabels:         updateAssetRequest.RemoveLabels,
+		Labels:               updateAssetRequest.Labels,
+		UpdateLastOpSummary:  updateAssetRequest.UpdateLastOpSummary,
+		LastOpSummary:        updateAssetRequest.LastOpSummary,
+		UpdateLastAlive:      updateAssetRequest.UpdateLastAlive,
+		LastAliveTimestamp:   updateAssetRequest.LastAliveTimestamp,
+		UpdateIp:             updateAssetRequest.UpdateIp,
+		EicNetIp:             updateAssetRequest.EicNetIp,
+		UpdateLocation:       updateAssetRequest.UpdateLocation,
+		Location:             updateAssetRequest.Location,
+	},
 	)
 	if err != nil {
 		return nil, err

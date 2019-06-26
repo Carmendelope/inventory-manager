@@ -50,8 +50,9 @@ func (m *Manager) ListMetrics(selector *grpc_inventory_manager_go.AssetSelector)
 	for _, proxyRequest := range(selectors) {
 		ecId := proxyRequest.GetEdgeControllerId()
 		log.Debug().Interface("request", proxyRequest).Msg("proxy request for ListMetrics")
-		ctx, _ := contexts.ProxyContext()
+		ctx, cancel := contexts.ProxyContext() // Manual calling cancel to avoid big list of defers
 		list, err := m.proxyClient.ListMetrics(ctx, proxyRequest)
+		cancel()
 		if err != nil {
 			// We still want to query to working edge controllers
 			log.Warn().Str("edge-controller-id", ecId).Err(err).Msg("failed calling ListMetrics")
@@ -108,8 +109,9 @@ func (m *Manager) QueryMetrics(request *grpc_inventory_manager_go.QueryMetricsRe
 		}
 		ecId := selector.GetEdgeControllerId()
 		log.Debug().Interface("request", proxyRequest).Msg("proxy request for QueryMetrics")
-		ctx, _ := contexts.ProxyContext()
+		ctx, cancel := contexts.ProxyContext() // Manual calling cancel to avoid big list of defers
 		result, err := m.proxyClient.QueryMetrics(ctx, proxyRequest)
+		cancel()
 
 		// Optimization when we're querying only a single EC, in which
 		// case we can also return any errors
@@ -227,29 +229,49 @@ func (m *Manager) getSelectors(selector *grpc_inventory_manager_go.AssetSelector
 	ecId := selector.GetEdgeControllerId()
 	assetIds := selector.GetAssetIds()
 
-	// We'll always create a set of asset ids to filter, as we need to
-	// filter out assets that are deleted/disabled. If we already have
-	// a set of assets, we still need to filter out disabled assets and
-	// disabled edge controllers.
-
+	// If we have a set of assets, we'll go from there
 	if len(assetIds) > 0 {
 		// If we have explicit assets, that's the minimum set we start from
 		for _, id := range(assetIds) {
 			ctx, cancel := contexts.InventoryContext()
 			// Calling cancel manually to avoid stacking up a lot of defers
-
 			asset, err := m.assetsClient.Get(ctx, &grpc_inventory_go.AssetId{
 				OrganizationId: orgId,
 				AssetId: id,
 			})
+			cancel()
 			if err != nil {
-				cancel()
 				return nil, derrors.NewUnavailableError("unable to retrieve asset information", err).WithParams(id)
 			}
 			if selectedAsset(asset, selector) {
 				addAsset(selectors, asset)
 			}
-			cancel()
+		}
+	} else if len(selector.GetLabels()) == 0 && len(selector.GetGroupIds()) == 0 {
+		// Make a selector for each Edge Controller, without explicit assets
+		if ecId != "" {
+			// No further selectors and ecId means we just need the
+			// already existing selector
+			selectors[ecId] = selector
+		} else {
+			// Selector for each Edge Controller in Organization
+			ctx, cancel := contexts.InventoryContext()
+			defer cancel()
+
+			ecList, err := m.controllersClient.List(ctx, &grpc_organization_go.OrganizationId{
+				OrganizationId: orgId,
+			})
+			if err != nil {
+				return nil, derrors.NewUnavailableError("unable to retrieve edge controllers", err).WithParams(orgId)
+			}
+
+			for _, ec := range(ecList.GetControllers()) {
+				id := ec.GetEdgeControllerId()
+				selectors[id] = &grpc_inventory_manager_go.AssetSelector{
+					OrganizationId: orgId,
+					EdgeControllerId: id,
+				}
+			}
 		}
 	} else if len(selector.GetLabels()) == 0 && len(selector.GetGroupIds()) == 0 {
 		// Make a selector for each Edge Controller, without explicit assets
@@ -278,6 +300,10 @@ func (m *Manager) getSelectors(selector *grpc_inventory_manager_go.AssetSelector
 			}
 		}
 	} else {
+		// If we have more filters to apply (labels, groups), we need to get
+		// a set of matching assets to filter. The Edge Controller doesn't
+		// have this info so we need to do it here and provide an exhaustive
+		// list of assets to query.
 		var assetList *grpc_inventory_go.AssetList
 		var err error
 
