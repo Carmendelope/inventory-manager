@@ -87,7 +87,7 @@ func (h *Handler) UpdateAsset(ctx context.Context, in *grpc_inventory_go.UpdateA
 		return nil, conversions.ToGRPCError(vErr)
 	}
 
-	return h.manager.UpdateAssetLocation(in)
+	return h.manager.UpdateAsset(in)
 }
 
 // UpdateDevice updates a device in the inventory.
