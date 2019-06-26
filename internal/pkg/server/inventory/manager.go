@@ -142,8 +142,107 @@ func (m *Manager) GetAssetInfo(assetID *grpc_inventory_go.AssetId) (*grpc_invent
 	return m.toAsset(asset), nil
 }
 
-func (m *Manager) Summary(organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
-	panic("implement me")
+func (m * Manager) getSummaryFromAssetInfo(assetInfo *grpc_inventory_go.AssetInfo) (int32, int64, int64){
+	var totalNumCPUs int32
+	var totalStorage int64
+	var totalRAM int64
+
+	if  assetInfo == nil{
+		return 0, 0, 0
+	}
+
+	if assetInfo.Hardware != nil {
+		for _, cpu := range assetInfo.Hardware.Cpus{
+			if cpu != nil {
+				totalNumCPUs = totalNumCPUs + cpu.NumCores
+			}
+		}
+		totalRAM = totalRAM + assetInfo.Hardware.InstalledRam
+	}
+
+	if assetInfo.Storage != nil {
+		for _, storage := range assetInfo.Storage {
+			if storage != nil {
+				totalStorage = totalStorage + storage.TotalCapacity
+			}
+		}
+	}
+
+	return totalNumCPUs, totalStorage, totalRAM
+}
+
+func (m * Manager) getSummaryFromAsset(asset *grpc_inventory_manager_go.Asset) (int32, int64, int64){
+	var totalNumCPUs int32
+	var totalStorage int64
+	var totalRAM int64
+
+	if asset == nil {
+		return 0, 0, 0
+	}
+
+	if asset.Hardware != nil {
+		for _, cpu := range asset.Hardware.Cpus {
+			if cpu != nil{
+				totalNumCPUs = totalNumCPUs + cpu.NumCores
+			}
+		}
+		totalRAM = totalRAM + asset.Hardware.InstalledRam
+	}
+
+	if asset.Storage != nil {
+		for _, storage := range asset.Storage {
+			if storage != nil {
+				totalStorage = totalStorage + storage.TotalCapacity
+			}
+		}
+	}
+
+	return totalNumCPUs, totalStorage, totalRAM
+}
+
+func (m *Manager) Summary (organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
+	//_, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
+	//defer cancel()
+
+	inventoryList, err := m.List(organizationID)
+	if err != nil {
+		return nil, err
+	}
+
+	var totalNumCPUs int32 = 0
+	var totalStorage int64 = 0
+	var totalRAM int64 = 0
+
+	for _, device := range inventoryList.Devices {
+		cpus, storage, ram := m.getSummaryFromAssetInfo(device.AssetInfo)
+		totalNumCPUs = totalNumCPUs + cpus
+		totalStorage = totalStorage + storage
+		totalRAM = totalRAM + ram
+	}
+
+	for _, asset := range inventoryList.Assets {
+		// TODO Refactor asset to include an AssetInfo
+		cpus, storage, ram := m.getSummaryFromAsset(asset)
+		totalNumCPUs = totalNumCPUs + cpus
+		totalStorage = totalStorage + storage
+		totalRAM = totalRAM + ram
+	}
+
+	for _, ec := range inventoryList.Controllers {
+		cpus, storage, ram := m.getSummaryFromAssetInfo(ec.AssetInfo)
+		totalNumCPUs = totalNumCPUs + cpus
+		totalStorage = totalStorage + storage
+		totalRAM = totalRAM + ram
+	}
+
+	totalNumCPUs64 := int64 (totalNumCPUs)
+
+	return &grpc_inventory_manager_go.InventorySummary{
+		OrganizationId:       organizationID.OrganizationId,
+		TotalNumCpu:          totalNumCPUs64,
+		TotalStorage:         totalStorage/int64(1024),
+		TotalRam:             totalRAM/int64(1024),
+	}, nil
 }
 
 func (m *Manager) toAssetFromList(assets []*grpc_inventory_go.Asset) []*grpc_inventory_manager_go.Asset {

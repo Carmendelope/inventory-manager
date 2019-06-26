@@ -24,9 +24,9 @@ func NewHandler(manager Manager) *Handler {
 }
 
 func (h *Handler) List(_ context.Context, orgID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventoryList, error) {
-	verr := entities.ValidOrganizationID(orgID)
-	if verr != nil {
-		return nil, conversions.ToGRPCError(verr)
+	vErr := entities.ValidOrganizationID(orgID)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
 	}
 	list, err := h.manager.List(orgID)
 	if err != nil {
@@ -36,9 +36,9 @@ func (h *Handler) List(_ context.Context, orgID *grpc_organization_go.Organizati
 }
 
 func (h *Handler) GetControllerExtendedInfo(_ context.Context, edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_inventory_manager_go.EdgeControllerExtendedInfo, error) {
-	verr := entities.ValidEdgeControllerId(edgeControllerID)
-	if verr != nil {
-		return nil, conversions.ToGRPCError(verr)
+	vErr := entities.ValidEdgeControllerId(edgeControllerID)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
 	}
 	controller, assets, err := h.manager.GetControllerExtendedInfo(edgeControllerID)
 	if err != nil {
@@ -51,9 +51,9 @@ func (h *Handler) GetControllerExtendedInfo(_ context.Context, edgeControllerID 
 }
 
 func (h *Handler) GetAssetInfo(_ context.Context, assetID *grpc_inventory_go.AssetId) (*grpc_inventory_manager_go.Asset, error) {
-	verr := entities.ValidAssetID(assetID)
-	if verr != nil {
-		return nil, conversions.ToGRPCError(verr)
+	vErr := entities.ValidAssetID(assetID)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
 	}
 	asset, err := h.manager.GetAssetInfo(assetID)
 	if err != nil {
@@ -64,7 +64,6 @@ func (h *Handler) GetAssetInfo(_ context.Context, assetID *grpc_inventory_go.Ass
 
 // GetAssetInfo returns the information of a given device
 func (h *Handler)GetDeviceInfo(ctx context.Context, deviceID *grpc_inventory_manager_go.DeviceId) (*grpc_inventory_manager_go.Device, error) {
-
 	vErr := entities.ValidDeviceId(deviceID)
 	if vErr != nil {
 		return nil, conversions.ToGRPCError(vErr)
@@ -74,11 +73,11 @@ func (h *Handler)GetDeviceInfo(ctx context.Context, deviceID *grpc_inventory_man
 }
 
 func (h *Handler) Summary(_ context.Context, orgID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
-	verr := entities.ValidOrganizationID(orgID)
-	if verr != nil {
-		return nil, conversions.ToGRPCError(verr)
+	vErr := entities.ValidOrganizationID(orgID)
+	if vErr != nil {
+		return nil, conversions.ToGRPCError(vErr)
 	}
-	panic("implement me")
+	return h.manager.Summary(orgID)
 }
 
 // UpdateAsset updates an asset in the inventory.

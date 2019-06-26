@@ -106,3 +106,7 @@ func (h *Handler) UpdateECGeolocation(_ context.Context, in *grpc_inventory_mana
 	return h.manager.UpdateECGeolocation(in)
 
 }
+
+func (h *Handler) UpdateEC(context.Context, *grpc_inventory_go.UpdateEdgeControllerRequest) (*grpc_inventory_go.EdgeController, error) {
+	panic("implement me")
+}
