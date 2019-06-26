@@ -142,6 +142,7 @@ func (m *Manager) GetAssetInfo(assetID *grpc_inventory_go.AssetId) (*grpc_invent
 	return m.toAsset(asset), nil
 }
 
+// getSummaryFromAssetInfo returns totalNumCPUs, totalStorage and totalRAM
 func (m * Manager) getSummaryFromAssetInfo(assetInfo *grpc_inventory_go.AssetInfo) (int32, int64, int64){
 	var totalNumCPUs int32
 	var totalStorage int64
@@ -171,6 +172,7 @@ func (m * Manager) getSummaryFromAssetInfo(assetInfo *grpc_inventory_go.AssetInf
 	return totalNumCPUs, totalStorage, totalRAM
 }
 
+// getSummaryFromAsset returns totalNumCPUs, totalStorage and totalRAM
 func (m * Manager) getSummaryFromAsset(asset *grpc_inventory_manager_go.Asset) (int32, int64, int64){
 	var totalNumCPUs int32
 	var totalStorage int64
@@ -201,9 +203,6 @@ func (m * Manager) getSummaryFromAsset(asset *grpc_inventory_manager_go.Asset) (
 }
 
 func (m *Manager) Summary (organizationID *grpc_organization_go.OrganizationId) (*grpc_inventory_manager_go.InventorySummary, error) {
-	//_, cancel := context.WithTimeout(context.Background(), DefaultTimeout)
-	//defer cancel()
-
 	inventoryList, err := m.List(organizationID)
 	if err != nil {
 		return nil, err
@@ -240,6 +239,7 @@ func (m *Manager) Summary (organizationID *grpc_organization_go.OrganizationId) 
 	return &grpc_inventory_manager_go.InventorySummary{
 		OrganizationId:       organizationID.OrganizationId,
 		TotalNumCpu:          totalNumCPUs64,
+		// Divided by 1024 to convert MB to GB
 		TotalStorage:         totalStorage/int64(1024),
 		TotalRam:             totalRAM/int64(1024),
 	}, nil
