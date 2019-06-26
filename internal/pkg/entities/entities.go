@@ -244,7 +244,7 @@ func ValidQueryMetricsRequest(request *grpc_inventory_manager_go.QueryMetricsReq
 		return derr
 	}
 
-	if len(request.GetAssets().GetAssetIds()) != 1 && request.GetAggregation() == grpc_inventory_manager_go.AggregationType_NONE {
+	if len(request.GetAssets().GetAssetIds()) != 1 && request.GetAggregation() == grpc_inventory_manager_go.QueryMetricsRequest_NONE {
 		return derrors.NewInvalidArgumentError("metrics for more than one asset requested without aggregation method")
 	}
 
