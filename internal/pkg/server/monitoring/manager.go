@@ -81,6 +81,16 @@ func (m *Manager) QueryMetrics(request *grpc_inventory_manager_go.QueryMetricsRe
 	}
 
 	aggregationType := request.GetAggregation()
+	// If we're going to calculate an average, we actually need the
+	// sum. We can recreate the sum by multiplying the average with
+	// the number of assets, or we can just ask for the sum. When
+	// we process all retrieved metrics, we'll do the division.
+	// If we only query a single edge controller we don't need to
+	// do post-processing and just return the result, so in that case
+	// we do need an average.
+	if len(selectors) > 1 && aggregationType == grpc_inventory_manager_go.AggregationType_AVG {
+		request.Aggregation = grpc_inventory_manager_go.AggregationType_SUM
+	}
 
 	// Results is a mapping from metric to values, where values is a mapping
 	// from timestamp to value and count. This last mapping is needed for merging
@@ -154,7 +164,7 @@ func (m *Manager) QueryMetrics(request *grpc_inventory_manager_go.QueryMetricsRe
 	metricResults := make(map[string]*grpc_inventory_manager_go.QueryMetricsResult_AssetMetrics, len(results))
 	for metric, valueMap := range(results) {
 		// Make a list sorted timestamps
-		keys := make([]int64, len(valueMap))
+		keys := make([]int64, 0, len(valueMap))
 		for key := range(valueMap) {
 			keys = append(keys, key)
 		}
