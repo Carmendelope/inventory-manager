@@ -139,11 +139,7 @@ func (m *Manager) getSelectors(selector *grpc_inventory_manager_go.AssetSelector
 	ecId := selector.GetEdgeControllerId()
 	assetIds := selector.GetAssetIds()
 
-	// We'll always create a set of asset ids to filter, as we need to
-	// filter out assets that are deleted/disabled. If we already have
-	// a set of assets, we still need to filter out disabled assets and
-	// disabled edge controllers.
-
+	// If we have a set of assets, we'll go from there
 	if len(assetIds) > 0 {
 		// If we have explicit assets, that's the minimum set we start from
 		for _, id := range(assetIds) {
@@ -188,6 +184,10 @@ func (m *Manager) getSelectors(selector *grpc_inventory_manager_go.AssetSelector
 			}
 		}
 	} else {
+		// If we have more filters to apply (labels, groups), we need to get
+		// a set of matching assets to filter. The Edge Controller doesn't
+		// have this info so we need to do it here and provide an exhaustive
+		// list of assets to query.
 		var assetList *grpc_inventory_go.AssetList
 		var err error
 
