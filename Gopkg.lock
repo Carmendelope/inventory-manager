@@ -157,20 +157,20 @@
   version = "v0.0.12"
 
 [[projects]]
-  digest = "1:45793a945f1c3fadb8ac997ce0056a790fe626c221792f849ca71b86aa1a96f2"
+  digest = "1:1aa8ea0ae2a697c0377f50bbdea4f889eb75a97d5bc239e006a1bca85cd785ee"
   name = "github.com/nalej/grpc-infrastructure-go"
   packages = ["."]
   pruneopts = ""
-  revision = "670c43c3cba1eceadd539001c57a23b0e3791637"
-  version = "v0.0.37"
+  revision = "11415f1a09bd871ad95d2362d482562ae11014f2"
+  version = "v0.0.38"
 
 [[projects]]
-  digest = "1:f6b6a7064193c848a876eeaa66b7cb71ac8f18138a33d567145344d44ead81b5"
+  digest = "1:e2212e912901c83e646d4fb637f8942432adf33341252a4c80fc8d0f17eb7920"
   name = "github.com/nalej/grpc-inventory-go"
   packages = ["."]
   pruneopts = ""
-  revision = "b61711830734e6a5d79d5e8679e1507373873d0d"
-  version = "v0.0.27"
+  revision = "09869085f2082d1ecee195cafb4cee4e78078f3e"
+  version = "v0.0.28"
 
 [[projects]]
   digest = "1:86e9e235e71717991019737c96d7455cafba64f05b9467a25103c78f3c63c568"
