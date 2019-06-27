@@ -64,7 +64,7 @@ func (ioh *InventoryOpsHandler) consumeAgentOpResponse() {
 }
 
 func (ioh *InventoryOpsHandler) consumeECOpResponse() {
-	log.Debug().Msg("AgentOpResponse")
+	log.Debug().Msg("ECOpResponse")
 	for {
 		received := <- ioh.consumer.Config.ChEdgeControllerOpResponse
 		log.Debug().Msg("edgeControllerOpResponse received")
