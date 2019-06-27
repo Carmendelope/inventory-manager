@@ -41,6 +41,8 @@ func (m *Manager) generateToken() string {
 func (m *Manager) InstallAgent(request *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.InstallAgentResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), ProxyTimeout)
 	defer cancel()
+	// propagate the certificate to the agent.
+	request.CaCert = m.CACert
 	response, err := m.proxyClient.InstallAgent(ctx, request)
 	if err != nil{
 		return nil, err
