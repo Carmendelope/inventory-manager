@@ -149,12 +149,12 @@
   version = "v0.0.14"
 
 [[projects]]
-  digest = "1:16eab2dbea8be45953e71fee39a9190cc74a4828bdf734e2cd3fef8570a939ac"
+  digest = "1:9d83a254a8e24e2182f624bc83f4c7dcb5d14420549d508789fc0589e4ec42fe"
   name = "github.com/nalej/grpc-edge-inventory-proxy-go"
   packages = ["."]
   pruneopts = ""
-  revision = "f6934f5a033f138feb51a9af9cd73019804fd74a"
-  version = "v0.0.12"
+  revision = "6afbec964abf81bfc377f247e0fb9037601a6cfd"
+  version = "v0.0.13"
 
 [[projects]]
   digest = "1:1aa8ea0ae2a697c0377f50bbdea4f889eb75a97d5bc239e006a1bca85cd785ee"
@@ -173,12 +173,12 @@
   version = "v0.0.28"
 
 [[projects]]
-  digest = "1:86e9e235e71717991019737c96d7455cafba64f05b9467a25103c78f3c63c568"
+  digest = "1:dd3b2bb5d9d35d7ddff7ee94f4c03a57597601ebd301aa278e06ca791fa32ed4"
   name = "github.com/nalej/grpc-inventory-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "08ea2a2664c46bee46cbd50089ab41752ffd4489"
-  version = "v0.0.49"
+  revision = "31b83d1e62c45d5a5c14add229311d351e042808"
+  version = "v0.0.50"
 
 [[projects]]
   digest = "1:f41783cc6d03c6734fe9bb8b42ca4aa87651430e98cd8fe0ad5c72ca30da2efa"
@@ -385,7 +385,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:af8468becde607c9f94e9c659db247748f68907b7058a1b6104be5163fd1a581"
+  digest = "1:80177f66172504b67f0c8b46ae8be70c95b81297b9359dfbbef008b4f95ca2cb"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -395,7 +395,7 @@
     "protobuf/field_mask",
   ]
   pruneopts = ""
-  revision = "989357319d63150615221e52d4addd4b7933fd91"
+  revision = "eb59cef1c072c61ea4f7623910448d5e9c6a4455"
 
 [[projects]]
   digest = "1:6881653b963cd12dc1a9824aed5e122d0ff38e53e3ee07862f969a56ad2f2e9c"

@@ -192,13 +192,16 @@ func (m *Manager) DeleteAgentOperation(operationID *grpc_inventory_manager_go.Ag
 }
 
 
-func (m *Manager) UninstallAgent( assetID *grpc_inventory_go.AssetId) (*grpc_common_go.Success, error){
+func (m *Manager) UninstallAgent( request *grpc_inventory_manager_go.UninstallAgentRequest) (*grpc_common_go.Success, error){
 
 	// Check if the asset_id is correct, (exist and is managed by edge_controller_id)
 	ctxSM, cancelSM := contexts.SMContext()
 	defer cancelSM()
 
-	asset, err := m.assetClient.Get(ctxSM, assetID)
+	asset, err := m.assetClient.Get(ctxSM, &grpc_inventory_go.AssetId{
+		OrganizationId: request.OrganizationId,
+		AssetId: request.AssetId,
+	} )
 	if err != nil {
 		return nil, err
 	}
@@ -206,10 +209,11 @@ func (m *Manager) UninstallAgent( assetID *grpc_inventory_go.AssetId) (*grpc_com
 	ctx, cancel := context.WithTimeout(context.Background(), ProxyTimeout)
 	defer cancel()
 
-	return m.proxyClient.UninstallAgent(ctx, &grpc_inventory_manager_go.FullAssetId{
-		OrganizationId: assetID.OrganizationId,
+	return m.proxyClient.UninstallAgent(ctx, &grpc_inventory_manager_go.FullUninstallAgentRequest{
+		OrganizationId: request.OrganizationId,
 		EdgeControllerId: asset.EdgeControllerId,
-		AssetId: assetID.AssetId,
+		AssetId: request.AssetId,
+		Force: request.Force,
 	})
 
 }
