@@ -16,7 +16,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-inventory-manager-go"
-    version="=v0.0.50"
+    version="=v0.0.51"
 
 [[constraint]]
     name="github.com/nalej/grpc-inventory-go"
@@ -32,7 +32,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-network-go"
-    version="v0.0.35"
+    version="v0.0.42"
 
 [[constraint]]
     name="github.com/onsi/ginkgo"

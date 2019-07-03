@@ -59,12 +59,12 @@ func (h *Handler) EICStart(_ context.Context, info *grpc_inventory_manager_go.EI
 	return &grpc_common_go.Success{}, nil
 }
 
-func (h *Handler) UnlinkEIC(_ context.Context, edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
-	vErr := entities.ValidEdgeControllerId(edgeControllerID)
+func (h *Handler) UnlinkEIC(_ context.Context, request *grpc_inventory_manager_go.UnlinkECRequest) (*grpc_common_go.Success, error) {
+	vErr := entities.ValidUnlinkECRequest(request)
 	if vErr != nil {
 		return nil, conversions.ToGRPCError(vErr)
 	}
-	return h.manager.UnlinkEIC(edgeControllerID)
+	return h.manager.UnlinkEIC(request)
 
 }
 
