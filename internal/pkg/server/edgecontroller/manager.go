@@ -161,12 +161,17 @@ func (m *Manager) EICStart(info *grpc_inventory_manager_go.EICStartInfo) error {
 	return nil
 }
 
-func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
+func (m *Manager) UnlinkEIC(request *grpc_inventory_manager_go.UnlinkECRequest) (*grpc_common_go.Success, error) {
 
 
 	// Check in inventory controller that the edge controller does not have any agent attached to it.
 	smCtx, smCancel := contexts.SMContext()
 	defer smCancel()
+
+	edgeControllerID := &grpc_inventory_go.EdgeControllerId{
+		OrganizationId: request.OrganizationId,
+		EdgeControllerId: request.EdgeControllerId,
+	}
 
 	assets, err := m.assetsClient.ListControllerAssets(smCtx, edgeControllerID)
 	if err != nil {

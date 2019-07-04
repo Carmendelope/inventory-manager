@@ -68,6 +68,16 @@ func ValidEdgeControllerId(edgeControllerID *grpc_inventory_go.EdgeControllerId)
 	return nil
 }
 
+func ValidUnlinkECRequest(request *grpc_inventory_manager_go.UnlinkECRequest) derrors.Error{
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError("organization_id must not be empty")
+	}
+	if request.EdgeControllerId == "" {
+		return derrors.NewInvalidArgumentError("edge_controller_id must not be empty")
+	}
+	return nil
+}
+
 func ValidEICStartInfo(info *grpc_inventory_manager_go.EICStartInfo) derrors.Error {
 	if info.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError("organization_id must not be empty")

@@ -157,7 +157,7 @@ func (s *Service) Run() error {
 	// Create handlers
 
 	agentManager := agent.NewManager(
-		clients.edgeInvProxyControllerClient, clients.assetsClient, s.Configuration.CACertRaw)
+		clients.edgeInvProxyControllerClient, clients.assetsClient, clients.controllersClient, s.Configuration.CACertRaw)
 	agentHandler := agent.NewHandler(agentManager)
 
 	ecManager := edgecontroller.NewManager(
