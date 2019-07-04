@@ -25,7 +25,7 @@ func NewHandler(manager Manager) *Handler {
 	}
 }
 
-func (h *Handler) InstallAgent(_ context.Context, request *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.InstallAgentResponse, error) {
+func (h *Handler) InstallAgent(_ context.Context, request *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.EdgeControllerOpResponse, error) {
 	vErr := entities.ValidInstallAgentRequest(request)
 	if vErr != nil {
 		return nil, conversions.ToGRPCError(vErr)
@@ -101,7 +101,7 @@ func (h *Handler) DeleteAgentOperation(context.Context, *grpc_inventory_manager_
 }
 
 // UninstallAgent operation to uninstall an agent
-func (h *Handler) UninstallAgent(_ context.Context, request *grpc_inventory_manager_go.UninstallAgentRequest) (*grpc_common_go.Success, error){
+func (h *Handler) UninstallAgent(_ context.Context, request *grpc_inventory_manager_go.UninstallAgentRequest) (*grpc_inventory_manager_go.EdgeControllerOpResponse, error){
 
 	vErr := entities.ValidUninstallAgentRequest(request)
 	if vErr != nil {
