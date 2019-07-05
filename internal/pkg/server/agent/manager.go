@@ -77,6 +77,10 @@ func (m *Manager) AgentJoin(request *grpc_inventory_manager_go.AgentJoinRequest)
 	ctx, cancel := context.WithTimeout(context.Background(), ProxyTimeout)
 	defer cancel()
 
+	location := &grpc_inventory_go.InventoryLocation{
+		Geolocation: request.Geolocation,
+	}
+
 	// send a message to system model to add the agent
 	asset, err := m.assetClient.Add(ctx, &grpc_inventory_go.AddAssetRequest{
 		OrganizationId:   request.OrganizationId,
@@ -86,6 +90,7 @@ func (m *Manager) AgentJoin(request *grpc_inventory_manager_go.AgentJoinRequest)
 		Os:               request.Os,
 		Hardware:         request.Hardware,
 		Storage:          request.Storage,
+		Location:      	  location,
 	})
 	if err != nil {
 		return nil, err
