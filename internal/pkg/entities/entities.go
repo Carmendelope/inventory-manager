@@ -68,8 +68,7 @@ func ValidEdgeControllerId(edgeControllerID *grpc_inventory_go.EdgeControllerId)
 	return nil
 }
 
-//  *grpc_inventory_manager_go.UnlinkECRequest
-func ValidUnlinkECRequest (request *grpc_inventory_manager_go.UnlinkECRequest) derrors.Error{
+func ValidUnlinkECRequest(request *grpc_inventory_manager_go.UnlinkECRequest) derrors.Error{
 	if request.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError("organization_id must not be empty")
 	}

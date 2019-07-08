@@ -61,6 +61,7 @@ func (h *Handler) EICStart(_ context.Context, info *grpc_inventory_manager_go.EI
 
 func (h *Handler) UnlinkEIC(_ context.Context, request *grpc_inventory_manager_go.UnlinkECRequest) (*grpc_common_go.Success, error) {
 	vErr := entities.ValidUnlinkECRequest(request)
+
 	if vErr != nil {
 		return nil, conversions.ToGRPCError(vErr)
 	}
