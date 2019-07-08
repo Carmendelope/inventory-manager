@@ -186,7 +186,7 @@ func (m *Manager) UnlinkEIC(request *grpc_inventory_manager_go.UnlinkECRequest) 
 	proxyCtx, proxyCancel := contexts.ProxyContext()
 	defer proxyCancel()
 	_, err = m.proxyClient.UnlinkEC(proxyCtx, edgeControllerID)
-	if err != nil && request.Force == false { // if the unlink is forced, the EC may not be connected.
+	if err != nil && !request.Force { // if the unlink is forced, the EC may not be connected.
 		return nil, err
 	}
 
