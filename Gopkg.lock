@@ -14,7 +14,7 @@
   version = "v0.1.1"
 
 [[projects]]
-  digest = "1:529d738b7976c3848cae5cf3a8036440166835e389c1f617af701eeb12a0518d"
+  digest = "1:b852d2b62be24e445fcdbad9ce3015b44c207815d631230dfce3f14e7803f5bf"
   name = "github.com/golang/protobuf"
   packages = [
     "jsonpb",
@@ -31,11 +31,11 @@
     "ptypes/wrappers",
   ]
   pruneopts = ""
-  revision = "b5d812f8a3706043e23a9cd5babf2e5423744d30"
-  version = "v1.3.1"
+  revision = "6c65a5562fc06764971b7c5d05c76c75e84bdbf7"
+  version = "v1.3.2"
 
 [[projects]]
-  digest = "1:55242a7d1342509c3b4719a3496035626266c1a6ca062a6e016a2a6bf90ac48b"
+  digest = "1:bd97c012fb859c7f350d6c7ba6418a797f15451ccb93defd2602d768fd8321a7"
   name = "github.com/grpc-ecosystem/grpc-gateway"
   packages = [
     "internal",
@@ -43,8 +43,8 @@
     "utilities",
   ]
   pruneopts = ""
-  revision = "d54b3615f714b03edde6d9206fa0476a9169c966"
-  version = "v1.9.3"
+  revision = "bebc7374a79e1105d786ef3468b474e47d652511"
+  version = "v1.9.4"
 
 [[projects]]
   digest = "1:b3c5b95e56c06f5aa72cb2500e6ee5f44fcd122872d4fec2023a488e561218bc"
@@ -173,12 +173,12 @@
   version = "v0.0.29"
 
 [[projects]]
-  digest = "1:04af59f3ce86a67a576fc508f8b5a87346f8f2f3bd12478125a33dd893149dd8"
+  digest = "1:050eb665c45aae97653bf05d324a48e77e052058c3fa9e049877eb40563be2bd"
   name = "github.com/nalej/grpc-inventory-manager-go"
   packages = ["."]
   pruneopts = ""
-  revision = "a8a6dd0bc74510bcca5f22298fc745db2b7fa518"
-  version = "v0.0.53"
+  revision = "e5d9d34803ba41321cb01f8804e366296bdac20f"
+  version = "v0.0.54"
 
 [[projects]]
   digest = "1:f41783cc6d03c6734fe9bb8b42ca4aa87651430e98cd8fe0ad5c72ca30da2efa"
@@ -340,11 +340,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2579a16d8afda9c9a475808c13324f5e572852e8927905ffa15bb14e71baba4f"
+  digest = "1:8d8dab33e614e3839a47bbb340189458c28c58e60655023d20eeb92b7300768a"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "04f50cda93cbb67f2afa353c52f342100e80e625"
+  revision = "fae7ac547cb717d141c433a2a173315e216b64c4"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -385,7 +385,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2ad4db7088b8cb174b051191bc2722722ad0f599db99d8eb5074358135f1580b"
+  digest = "1:53a69ca05e2f34d0d6e5cc02d2d3b0c0f815628965757fb5aaf04aa83ca5cc07"
   name = "google.golang.org/genproto"
   packages = [
     "googleapis/api/annotations",
@@ -395,7 +395,7 @@
     "protobuf/field_mask",
   ]
   pruneopts = ""
-  revision = "710ae3a149df3775bfc2e9efb7f4fb97b186b233"
+  revision = "c506a9f9061087022822e8da603a52fc387115a8"
 
 [[projects]]
   digest = "1:3608095d1dc06a2ff2e6f0476c9cc9584dd8e4b64151fed41a3663b9033a8b63"
