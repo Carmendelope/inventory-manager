@@ -161,26 +161,32 @@ func (m *Manager) EICStart(info *grpc_inventory_manager_go.EICStartInfo) error {
 	return nil
 }
 
-func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId) (*grpc_common_go.Success, error) {
+func (m *Manager) UnlinkEIC(request *grpc_inventory_manager_go.UnlinkECRequest) (*grpc_common_go.Success, error) {
 
 
 	// Check in inventory controller that the edge controller does not have any agent attached to it.
 	smCtx, smCancel := contexts.SMContext()
 	defer smCancel()
 
+	edgeControllerID := &grpc_inventory_go.EdgeControllerId{
+		OrganizationId: 	request.OrganizationId,
+		EdgeControllerId: 	request.EdgeControllerId,
+	}
+
 	assets, err := m.assetsClient.ListControllerAssets(smCtx, edgeControllerID)
 	if err != nil {
 		return nil, err
 	}
-	if len(assets.Assets) != 0 {
+
+	if request.Force == false && len(assets.Assets) != 0 {
 		return nil, conversions.ToGRPCError(derrors.NewPermissionDeniedError("Unable to unlink ec, it manages assets, delete them first"))
 	}
 
-	// Send unlink message to yhe proxy
+	// Send unlink message to the proxy
 	proxyCtx, proxyCancel := contexts.ProxyContext()
 	defer proxyCancel()
 	_, err = m.proxyClient.UnlinkEC(proxyCtx, edgeControllerID)
-	if err != nil {
+	if err != nil && !request.Force { // if the unlink is forced, the EC may not be connected.
 		return nil, err
 	}
 
@@ -208,6 +214,23 @@ func (m *Manager) UnlinkEIC(edgeControllerID *grpc_inventory_go.EdgeControllerId
 	if err != nil {
 		log.Warn().Interface("edgeControllerId", edgeControllerID).Msg("failed to delete EC from SM")
 		return nil, err
+	}
+
+	// if the unlink is forced -> delete all the agents to system-model
+	if request.Force && len(assets.Assets) > 0 {
+		log.Debug().Bool("force", request.Force).Msg("unlink forced, deleting assets")
+		for _, asset := range assets.Assets {
+
+			smAssetCtx, smAssetCancel := contexts.SMContext()
+			_, err = m.assetsClient.Remove(smAssetCtx, &grpc_inventory_go.AssetId{
+				OrganizationId: asset.OrganizationId,
+				AssetId:        asset.AssetId,
+			})
+			if err != nil {
+				log.Warn().Str("asset_id", asset.AssetId).Str("err", conversions.ToDerror(err).DebugReport()).Msg("unable to be removed")
+			}
+			smAssetCancel()
+		}
 	}
 
 	return &grpc_common_go.Success{}, nil

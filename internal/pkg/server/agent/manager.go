@@ -6,6 +6,7 @@ package agent
 
 import (
 	"context"
+	"fmt"
 	"github.com/nalej/derrors"
 	"github.com/nalej/grpc-common-go"
 	"github.com/nalej/grpc-edge-inventory-proxy-go"
@@ -23,13 +24,16 @@ const ProxyTimeout = time.Second * 60
 type Manager struct {
 	proxyClient grpc_edge_inventory_proxy_go.EdgeControllerProxyClient
 	assetClient grpc_inventory_go.AssetsClient
+	controllersClient 	grpc_inventory_go.ControllersClient
 	CACert      string
 }
 
-func NewManager(proxyClient grpc_edge_inventory_proxy_go.EdgeControllerProxyClient, assetClient grpc_inventory_go.AssetsClient, caCert string) Manager {
+func NewManager(proxyClient grpc_edge_inventory_proxy_go.EdgeControllerProxyClient, assetClient grpc_inventory_go.AssetsClient,
+	controllersClient grpc_inventory_go.ControllersClient,	caCert string) Manager {
 	return Manager{
 		proxyClient: proxyClient,
 		assetClient: assetClient,
+		controllersClient: controllersClient,
 		CACert:      caCert,
 	}
 }
@@ -38,13 +42,23 @@ func (m *Manager) generateToken() string {
 	return uuid.NewV4().String()
 }
 
-func (m *Manager) InstallAgent(request *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.InstallAgentResponse, error) {
+func (m *Manager) InstallAgent(request *grpc_inventory_manager_go.InstallAgentRequest) (*grpc_inventory_manager_go.EdgeControllerOpResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), ProxyTimeout)
 	defer cancel()
+	// propagate the certificate to the agent.
+	request.CaCert = m.CACert
 	response, err := m.proxyClient.InstallAgent(ctx, request)
 	if err != nil{
 		return nil, err
 	}
+
+	// update the last operation result in EC
+	err = m.updateLastECOpResponse(response)
+	if err != nil {
+		log.Warn().Str("operation_id", response.OperationId).Str("status", response.Status.String()).Str("info", response.Info).
+			Str("error", conversions.ToDerror(err).DebugReport()).Msg("error updating install agent response")
+	}
+
 	return response, nil
 }
 
@@ -63,6 +77,10 @@ func (m *Manager) AgentJoin(request *grpc_inventory_manager_go.AgentJoinRequest)
 	ctx, cancel := context.WithTimeout(context.Background(), ProxyTimeout)
 	defer cancel()
 
+	location := &grpc_inventory_go.InventoryLocation{
+		Geolocation: request.Geolocation,
+	}
+
 	// send a message to system model to add the agent
 	asset, err := m.assetClient.Add(ctx, &grpc_inventory_go.AddAssetRequest{
 		OrganizationId:   request.OrganizationId,
@@ -72,6 +90,7 @@ func (m *Manager) AgentJoin(request *grpc_inventory_manager_go.AgentJoinRequest)
 		Os:               request.Os,
 		Hardware:         request.Hardware,
 		Storage:          request.Storage,
+		Location:      	  location,
 	})
 	if err != nil {
 		return nil, err
@@ -189,14 +208,40 @@ func (m *Manager) DeleteAgentOperation(operationID *grpc_inventory_manager_go.Ag
 	panic("implement me")
 }
 
+func (m *Manager) updateLastECOpResponse(request *grpc_inventory_manager_go.EdgeControllerOpResponse) error {
 
-func (m *Manager) UninstallAgent( assetID *grpc_inventory_go.AssetId) (*grpc_common_go.Success, error){
+	// updates the EC with last operation result
+	ctxSMUpdate, cancelSMUpdate := contexts.SMContext()
+	defer cancelSMUpdate()
+
+	_, err := m.controllersClient.Update(ctxSMUpdate, &grpc_inventory_go.UpdateEdgeControllerRequest{
+		OrganizationId: request.OrganizationId,
+		EdgeControllerId: request.EdgeControllerId,
+		AddLabels: false,
+		RemoveLabels: false,
+		UpdateLastAlive: false,
+		UpdateGeolocation: false,
+		UpdateLastOpSummary: true,
+		LastOpSummary: &grpc_inventory_go.ECOpSummary{
+			OperationId: request.OperationId,
+			Timestamp: request.Timestamp,
+			Status: request.Status,
+			Info:request.Info,
+		},
+	})
+	return err
+}
+
+func (m *Manager) UninstallAgent( request *grpc_inventory_manager_go.UninstallAgentRequest) (*grpc_inventory_manager_go.EdgeControllerOpResponse, error){
 
 	// Check if the asset_id is correct, (exist and is managed by edge_controller_id)
 	ctxSM, cancelSM := contexts.SMContext()
 	defer cancelSM()
 
-	asset, err := m.assetClient.Get(ctxSM, assetID)
+	asset, err := m.assetClient.Get(ctxSM, &grpc_inventory_go.AssetId{
+		OrganizationId: request.OrganizationId,
+		AssetId: request.AssetId,
+	} )
 	if err != nil {
 		return nil, err
 	}
@@ -204,11 +249,24 @@ func (m *Manager) UninstallAgent( assetID *grpc_inventory_go.AssetId) (*grpc_com
 	ctx, cancel := context.WithTimeout(context.Background(), ProxyTimeout)
 	defer cancel()
 
-	return m.proxyClient.UninstallAgent(ctx, &grpc_inventory_manager_go.FullAssetId{
-		OrganizationId: assetID.OrganizationId,
+	res, err :=  m.proxyClient.UninstallAgent(ctx, &grpc_inventory_manager_go.FullUninstallAgentRequest{
+		OrganizationId: request.OrganizationId,
 		EdgeControllerId: asset.EdgeControllerId,
-		AssetId: assetID.AssetId,
+		AssetId: request.AssetId,
+		Force: request.Force,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	// update the last operation result in system-model
+	err = m.updateLastECOpResponse(res)
+	if err != nil {
+		log.Warn().Str("operation_id", res.OperationId).Str("status", res.Status.String()).Str("info", res.Info).
+			Str("error", conversions.ToDerror(err).DebugReport()).Msg("error updating uninstall agent response")
+	}
+
+	return res, nil
 
 }
 
@@ -227,6 +285,21 @@ func (m *Manager) UninstalledAgent( assetID *grpc_inventory_go.AssetUninstalledI
 	}
 
 	log.Debug().Str("asset", assetID.AssetId).Msg("removed from the system")
+
+	// update last_operation_result
+
+	err = m.updateLastECOpResponse(&grpc_inventory_manager_go.EdgeControllerOpResponse{
+		OrganizationId: assetID.OrganizationId,
+		EdgeControllerId: assetID.EdgeControllerId,
+		OperationId: assetID.OperationId,
+		Timestamp: time.Now().Unix(), // no timestamp received
+		Status: grpc_inventory_go.OpStatus_SUCCESS,
+		Info: fmt.Sprintf("agent %s uninstalled", assetID.AssetId),
+	})
+	if err != nil {
+		log.Warn().Str("edge_controller_id", assetID.EdgeControllerId).Str("operation_id", assetID.OperationId).
+			Msg("unable to update last operation result")
+	}
 
 	return &grpc_common_go.Success{}, nil
 }

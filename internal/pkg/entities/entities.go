@@ -68,6 +68,16 @@ func ValidEdgeControllerId(edgeControllerID *grpc_inventory_go.EdgeControllerId)
 	return nil
 }
 
+func ValidUnlinkECRequest(request *grpc_inventory_manager_go.UnlinkECRequest) derrors.Error{
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError("organization_id must not be empty")
+	}
+	if request.EdgeControllerId == "" {
+		return derrors.NewInvalidArgumentError("edge_controller_id must not be empty")
+	}
+	return nil
+}
+
 func ValidEICStartInfo(info *grpc_inventory_manager_go.EICStartInfo) derrors.Error {
 	if info.OrganizationId == "" {
 		return derrors.NewInvalidArgumentError("organization_id must not be empty")
@@ -126,6 +136,17 @@ func ValidAssetID(id *grpc_inventory_go.AssetId) derrors.Error {
 		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
 	}
 	if id.AssetId == "" {
+		return derrors.NewInvalidArgumentError("asset_id cannot be empty")
+	}
+	return nil
+}
+
+
+func ValidUninstallAgentRequest(request *grpc_inventory_manager_go.UninstallAgentRequest) derrors.Error {
+	if request.OrganizationId == "" {
+		return derrors.NewInvalidArgumentError("organization_id cannot be empty")
+	}
+	if request.AssetId == "" {
 		return derrors.NewInvalidArgumentError("asset_id cannot be empty")
 	}
 	return nil

@@ -16,15 +16,15 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-inventory-manager-go"
-    version="=v0.0.48"
+    version="=v0.0.54"
 
 [[constraint]]
     name="github.com/nalej/grpc-inventory-go"
-    version="=v0.0.27"
+    version="=v0.0.29"
 
 [[constraint]]
     name="github.com/nalej/grpc-edge-inventory-proxy-go"
-    version="=v0.0.12"
+    version="=v0.0.15"
 
 [[constraint]]
     name="github.com/nalej/grpc-vpn-server-go"
@@ -32,7 +32,7 @@
 
 [[constraint]]
     name="github.com/nalej/grpc-network-go"
-    version="v0.0.35"
+    version="v0.0.42"
 
 [[constraint]]
     name="github.com/onsi/ginkgo"
