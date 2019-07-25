@@ -79,9 +79,10 @@ func NewSelectorMapFactory(assetsClient grpc_inventory_go.AssetsClient, controll
 // want to include when retrieving historic data.
 func (f *SelectorMapFactory) SelectorMap(selector *grpc_inventory_manager_go.AssetSelector) (SelectorMap, derrors.Error) {
 	var selectors SelectorMap
+	var derr derrors.Error
 
 	for _, fn := range(f.funcList) {
-		selectors, derr := fn(selector)
+		selectors, derr = fn(selector)
 		if derr != nil {
 			return nil, derr
 		}
@@ -92,7 +93,7 @@ func (f *SelectorMapFactory) SelectorMap(selector *grpc_inventory_manager_go.Ass
 		}
 	}
 
-	derr := f.filterECs(selector.GetOrganizationId(), selectors)
+	derr = f.filterECs(selector.GetOrganizationId(), selectors)
 	if derr != nil {
 		return nil, derr
 	}
@@ -105,6 +106,8 @@ func (f *SelectorMapFactory) filterECs(orgId string, selectors SelectorMap) (der
 	if selectors == nil || len(selectors) == 0 {
 		return nil
 	}
+
+	log.Debug().Msg("filtering selectors")
 
 	ctx, cancel := contexts.InventoryContext()
 	defer cancel()
@@ -133,6 +136,8 @@ func (f *SelectorMapFactory) filterECs(orgId string, selectors SelectorMap) (der
 
 // If we have explicit assets, that's the minimum set we start from
 func (f *SelectorMapFactory) getAssetSelectors(selector *grpc_inventory_manager_go.AssetSelector) (SelectorMap, derrors.Error) {
+	log.Debug().Interface("selector", selector).Msg("getAssetSelectors")
+
 	orgId := selector.GetOrganizationId()
 	assetIds := selector.GetAssetIds()
 
@@ -164,6 +169,8 @@ func (f *SelectorMapFactory) getAssetSelectors(selector *grpc_inventory_manager_
 
 // Make a selector for each Edge Controller, without explicit assets
 func (f *SelectorMapFactory) getECSelectors(selector *grpc_inventory_manager_go.AssetSelector) (SelectorMap, derrors.Error) {
+	log.Debug().Interface("selector", selector).Msg("getECSelectors")
+
 	// Check if this is an appropriate selectormap creator for the selector
 	if len(selector.GetLabels()) != 0 || len(selector.GetGroupIds()) != 0 {
 		return nil, nil
@@ -207,6 +214,8 @@ func (f *SelectorMapFactory) getECSelectors(selector *grpc_inventory_manager_go.
 // have this info so we need to do it here and provide an exhaustive
 // list of assets to query.
 func (f *SelectorMapFactory) getFilteredSelectors(selector *grpc_inventory_manager_go.AssetSelector) (SelectorMap, derrors.Error) {
+	log.Debug().Interface("selector", selector).Msg("getFilteredSelectors")
+
 	// Check if this is an appropriate selectormap creator for the selector
 	if len(selector.GetLabels()) == 0 && len(selector.GetGroupIds()) == 0 {
 		return nil, nil

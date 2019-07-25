@@ -32,6 +32,7 @@ func NewManager(proxyClient grpc_edge_inventory_proxy_go.EdgeControllerProxyClie
 const edgeControllerAliveTimeout = 600
 
 func (m *Manager) ListMetrics(selector *grpc_inventory_manager_go.AssetSelector) (*grpc_inventory_manager_go.MetricsList, error) {
+	log.Debug().Interface("selector", selector).Msg("ListMetrics received")
 	// Get a selector for each relevant Edge Controller
 	selectorsFactory := NewSelectorMapFactory(m.assetsClient, m.controllersClient)
 	selectors, derr := selectorsFactory.SelectorMap(selector)
@@ -70,6 +71,7 @@ func (m *Manager) ListMetrics(selector *grpc_inventory_manager_go.AssetSelector)
 }
 
 func (m *Manager) QueryMetrics(request *grpc_inventory_manager_go.QueryMetricsRequest) (*grpc_inventory_manager_go.QueryMetricsResult, error) {
+	log.Debug().Interface("request", request).Msg("QueryMetrics received")
 	// Get a selector for each relevant Edge Controller
 	selectorsFactory := NewSelectorMapFactory(m.assetsClient, m.controllersClient)
 	selectors, derr := selectorsFactory.SelectorMap(request.GetAssets())
