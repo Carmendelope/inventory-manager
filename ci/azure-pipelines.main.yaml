@@ -70,7 +70,7 @@ jobs:
     parameters:
       modulePath: $(modulePath)
       appList: $(appList)
-      version $(version)
+      version: $(version)
   
   - template: docker/login.yaml@ci_templates
     parameters:
@@ -83,14 +83,14 @@ jobs:
       modulePath: $(modulePath)
       imageList: $(imageList)
       dockerRegistry: $(stagingDockerRegistry)
-      version $(version)
+      version: $(version)
   
   - template: docker/push.yaml@ci_templates
     parameters:
       modulePath: $(modulePath)
       imageList: $(imageList)
       dockerRegistry: $(stagingDockerRegistry)
-      version $(version)
+      version: $(version)
     
   - template: docker/logout.yaml@ci_templates
     parameters:
