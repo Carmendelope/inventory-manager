@@ -83,6 +83,13 @@ stages:
         kubeconfig: $(kubeconfig)
         namespace: $(namespace)
 
+    - template: certificates/letsencrypt/issue.yaml@ci_templates
+      parameters:
+        kubeconfig: $(kubeconfig)
+        namespace: $(namespace)
+        subdomain: mngt-ca
+        certificateName: mngt-ca-cert
+
     - template: k8s/resources/create.yaml@ci_templates
       parameters:
         kubeconfig: $(kubeconfig)
