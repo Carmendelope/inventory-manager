@@ -8,6 +8,9 @@
   "image_list": [
     "inventory-manager"
   ],
+  "component_list": [
+    "inventory-manager"
+  ],
   "tools": [
     "k8s",
     "docker"
