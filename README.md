@@ -4,17 +4,17 @@ This is the code for the `inventory-manager` component, which is in charge of ma
 
 ## Getting Started
 
-The component resides in the `Mngt Cluster` and handles of the information going and coming from all the elements in the inventory (`assets`, `edge-controllers` and `devices`.)
+The component resides in the management cluster and handles the information going and coming from all the elements in the inventory (`assets`, `edge-controllers` and `devices`).
 
 ### Prerequisites
 
-* authx
-* vpn-manager
-* system-model
-* device-manager
-* nalej-bus
-* network-manager
-* edge-inventory-proxy
+* [`authx`](https://github.com/nalej/authx)
+* [`vpn-server`](https://github.com/nalej/vpn-server)
+* [`system-model`](https://github.com/nalej/system-model)
+* [`device-manager`](https://github.com/nalej/device-manager)
+* [`nalej-bus`](https://github.com/nalej/nalej-bus)
+* [`network-manager`](https://github.com/nalej/network-manager)
+* [`edge-inventory-proxy`](https://github.com/nalej/edge-inventory-proxy)
 
 ### Build and compile
 
@@ -24,8 +24,7 @@ In order to build and compile this repository use the provided Makefile:
 make all
 ```
 
-This operation generates the binaries for this repo, download dependencies,
-run existing tests and generate ready-to-deploy Kubernetes files.
+This operation generates the binaries for this repo, downloads the required dependencies, runs existing tests and generates ready-to-deploy Kubernetes files.
 
 ### Run tests
 
@@ -59,7 +58,7 @@ Please read [contributing.md](contributing.md) for details on our code of conduc
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/nalej/inventory-manager/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the available versions, see the [tags on this repository](https://github.com/nalej/inventory-manager/tags). 
 
 ## Authors
 
